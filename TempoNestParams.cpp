@@ -778,7 +778,7 @@ void setFrequencies(char *ConfigFileName, double *SampleFreq, int numRedfreqs, i
 	for(int i =0;i < numRedfreqs-numRedLogFreqs; i++){	
 		SampleFreq[startpoint]=i+RedMidFreq;
 		startpoint++;
-		printf("making freqs %i %g\n", startpoint-1, SampleFreq[startpoint-1]);
+		//printf("making freqs %i %g\n", startpoint-1, SampleFreq[startpoint-1]);
 	
 	}
         for(int i =0;i < numDMfreqs; i++){

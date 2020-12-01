@@ -37,7 +37,6 @@ void vector_dgemm(double *A, double *B,double *C,int rowa, int cola, int rowb, i
                 N=rowa;
                 bt = CblasTrans;
         }
-	printf("M, K, N = %d %d %d\n", M, K, N);
 	logtchk("Running MKL dgemm");
         cblas_dgemm(CblasColMajor, at, bt, M, N, K, alpha, A, rowa,B, rowb, beta, C, M);
 	logtchk("Finished MKL dgemm");
