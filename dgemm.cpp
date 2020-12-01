@@ -1,8 +1,48 @@
+#include <config.h>
 #include <math.h>
 #include <algorithm>
 #include "dgemm.h"
+#include "stdio.h"
+#include "TKlog.h"
+
+#ifdef HAVE_MKL 
+#include "mkl.h"
+#include "mkl_cblas.h"
 
 
+void vector_dgemm(double *A, double *B,double *C,int rowa, int cola, int rowb, int colb, char AT, char BT)
+{
+  int M,N,K;
+
+        double alpha=1;
+        double beta=0;
+        CBLAS_TRANSPOSE at, bt;
+
+        if(AT == 'N'){
+                M=rowa;
+                K=cola;
+                at = CblasNoTrans;
+        }
+        else if(AT == 'T'){
+                M=cola;
+                K=rowa;
+                at = CblasTrans;
+        }
+
+        if(BT == 'N'){
+                N=colb;
+                bt = CblasNoTrans;
+        }
+        else if(BT == 'T'){
+                N=rowa;
+                bt = CblasTrans;
+        }
+	printf("M, K, N = %d %d %d\n", M, K, N);
+	logtchk("Running MKL dgemm");
+        cblas_dgemm(CblasColMajor, at, bt, M, N, K, alpha, A, rowa,B, rowb, beta, C, M);
+	logtchk("Finished MKL dgemm");
+}
+#else 
 void vector_dgemm(double *A, double *B,double *C,int rowa, int cola, int rowb, int colb, char AT, char BT)
 {
 
@@ -26,16 +66,18 @@ void vector_dgemm(double *A, double *B,double *C,int rowa, int cola, int rowb, i
 	}
 	else if(BT == 'T'){
 		N=rowa;
-	}	
+	}
 /*
 (TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC)*/
 
 
-	
+   logtchk("Running BLAS dgemm");
 	dgemm_(&AT, &BT, &M, &N, &K, &alpha, A, &rowa,B, &rowb, &beta, C, &M);
-
+logtchk("Finished BLAS dgemm");
 
 }
+#endif
+
 
 void dgemm(double **A, double **B,double **C,int rowa, int cola, int rowb, int colb, char AT, char BT)
 {

@@ -1,10 +1,11 @@
+#include <config.h>
 #include <math.h>
 #include <stdio.h>
 #include <algorithm>
 #include "dgesvd.h"
-//#include "mkl_lapacke.h"
-//#include "mkl.h"
-
+#ifdef HAVE_MKL
+#include "mkl_lapacke.h"
+#endif
 //#define min(a,b) ((a)>(b)?(b):(a))
 
 
@@ -63,6 +64,34 @@ computed. */
 	delete work;
 }
 
+#ifdef HAVE_MKL
+void vector_dgesvd(double *A, int M, int N)
+{
+        char jobu, jobvt;
+        int m=M, n=N ,lda=N, ldu=M, ldvt=N;
+        double  *s, *u, *vt;
+        int lwork, info;
+
+        vt = new double [N*N];
+        s = new double[N];
+
+
+        jobu = 'O'; /* Specifies options for computing U.                                                              
+                 A: all M columns of U are returned in array U;                                                        
+                 S: the first min(m,n) columns of U (the left                                                          
+                    singular vectors) are returned in the array U;                                                     
+                 O: the first min(m,n) columns of U (the left                                                          
+                    singular vectors) are overwritten on the array A;                                                  
+                 N: no columns of U (no left singular vectors) are                                                     
+                    computed. */
+
+        /* Compute SVD */
+        LAPACKE_dgesdd( LAPACK_COL_MAJOR, 'O', m, n, A, ldu, s, u, ldu, vt, ldvt);
+
+        delete vt;
+        delete s;
+}
+#else
 void vector_dgesvd(double *A, int M, int N)
 {
 
@@ -99,6 +128,9 @@ void vector_dgesvd(double *A, int M, int N)
 	delete iwork;
 	delete work;
 }
+#endif
+
+
 void dgesvd(double **A, int M, int N, double *S, double **U, double **VT)
 {
 

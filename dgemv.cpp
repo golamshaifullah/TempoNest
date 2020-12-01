@@ -1,8 +1,36 @@
+#include <config.h>
 #include <math.h>
 #include <algorithm>
 #include "dgemv.h"
+#include "TKlog.h"
 
+#ifdef HAVE_MKL
+#include "mkl.h"
+#include "mkl_cblas.h"
+void vector_dgemv(double *A, double *vecin,double *vecout,int rowa, int cola, char AT)
+{
 
+        int M,N,K;
+
+        double alpha=1;
+        double beta=0;
+        int incX=1;
+        int incY=1;
+
+        CBLAS_TRANSPOSE at;
+
+        if(AT == 'N'){
+          at = CblasNoTrans;
+        }
+        else if(AT == 'T'){
+          at = CblasTrans;
+        }
+
+	logtchk("Running MKL dgemv");
+        cblas_dgemv(CblasColMajor, at, rowa, cola, alpha, A, rowa, vecin, incX, beta, vecout, incY);
+	logtchk("Finished MKL dgemv");
+}
+#else
 void vector_dgemv(double *A, double *vecin,double *vecout,int rowa, int cola, char AT)
 {
 
@@ -13,11 +41,11 @@ void vector_dgemv(double *A, double *vecin,double *vecout,int rowa, int cola, ch
 	int incX=1;
 	int incY=1;
 
-	
+	logtchk("Running BLAS dgemv");
 	dgemv_(&AT, &rowa, &cola, &alpha, A, &rowa, vecin, &incX, &beta, vecout, &incY);
-  
+	logtchk("Finished BLAS dgemv");
 }
-
+#endif
 
 void dgemv(double **A, double *vecin,double *vecout,int rowa, int cola, char AT)
 {
