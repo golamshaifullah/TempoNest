@@ -374,13 +374,6 @@ void setupparams(char *ConfigFileName, int &useGPUS,
 
 	incDMEvent = 0;
 
-	DMEventStartPrior[0] = 50000;
-	DMEventStartPrior[1] = 51000;
-
-	DMEventLengthPrior[0] = 14;
-	DMEventLengthPrior[1] = 365.25;
-
-
 	incDMShapeEvent = 0;
 	numDMShapeCoeff = 0;
 	DMShapeCoeffPrior[0] = -0.01;
@@ -542,16 +535,21 @@ void setupparams(char *ConfigFileName, int &useGPUS,
 	parameters.readInto(incBreakingIndex, "incBreakingIndex", incBreakingIndex);
 	parameters.readInto(FitLowFreqCutoff, "FitLowFreqCutoff", FitLowFreqCutoff);
 
-
-	parameters.readInto(incDMEvent, "incDMEvent", incDMEvent);
-	parameters.readInto(DMEventStartPrior[0], "DMEventStartPrior[0]", DMEventStartPrior[0]);
-	parameters.readInto(DMEventStartPrior[1], "DMEventStartPrior[1]", DMEventStartPrior[1]);
-	parameters.readInto(DMEventLengthPrior[0], "DMEventLengthPrior[0]", DMEventLengthPrior[0]);
-	parameters.readInto(DMEventLengthPrior[1], "DMEventLengthPrior[1]", DMEventLengthPrior[1]);
-
-
 	parameters.readInto(incDMShapeEvent, "incDMShapeEvent", incDMShapeEvent);
 	parameters.readInto(numDMShapeCoeff, "numDMShapeCoeff", numDMShapeCoeff);
+
+	int n; char buffer [50];
+	for (int i=0; i<incDMShapeEvent; i++) {
+	  n=sprintf (buffer, "DMEventStartPrior[%i]", 2*i);
+	  parameters.readInto(DMEventStartPrior[2*i], buffer, DMEventStartPrior[2*i]);
+	  n=sprintf (buffer, "DMEventStartPrior[%i]", 2*i+1);
+	  parameters.readInto(DMEventStartPrior[2*i+1], buffer, DMEventStartPrior[2*i+1]);
+
+	  n=sprintf (buffer, "DMEventLengthPrior[%i]", 2*i);
+	  parameters.readInto(DMEventLengthPrior[2*i], buffer, DMEventLengthPrior[2*i]);
+          n=sprintf (buffer, "DMEventLengthPrior[%i]", 2*i+1);
+          parameters.readInto(DMEventLengthPrior[2*i+1], buffer, DMEventLengthPrior[2*i+1]);
+	}
 	parameters.readInto(DMShapeCoeffPrior[0], "DMShapeCoeffPrior[0]", DMShapeCoeffPrior[0]);
 	parameters.readInto(DMShapeCoeffPrior[1], "DMShapeCoeffPrior[1]", DMShapeCoeffPrior[1]);
 

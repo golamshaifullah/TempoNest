@@ -1743,14 +1743,14 @@ extern "C" int graphicalInterface(int argc, char **argv,
 	int incDMEvent;
 	double *DMEventStartPrior;
 	double *DMEventLengthPrior;
-	DMEventStartPrior=new double[2];
-	DMEventLengthPrior=new double[2];
+	DMEventStartPrior=new double[5*2]; // Assumes you include up to 5 DM events
+        DMEventLengthPrior=new double[5*2];
 
 	int incDMShapeEvent;
 	int numDMShapeCoeff;
 	double *DMShapeCoeffPrior;
 	DMShapeCoeffPrior=new double[2];
-
+	
 	int incRedShapeEvent;
 	int numRedShapeCoeff;
 	int MarginRedShapeCoeff;
@@ -1852,7 +1852,7 @@ extern "C" int graphicalInterface(int argc, char **argv,
 	setupparams(ConfigFileName, useGPUS, Type, numTempo2its, doLinearFit, doMax, incEFAC, numEPolTerms, incEQUAD, incRED, incDM, doTimeMargin, doJumpMargin, FitSig, customPriors, EFACPrior, EPolPrior, EQUADPrior, AlphaPrior, AmpPrior, DMAlphaPrior, DMAmpPrior, numRedCoeff, numDMCoeff, numRedPL, numDMPL, RedCoeffPrior, DMCoeffPrior, incFloatDM, DMFreqPrior, yearlyDM, incsinusoid, incFloatRed, RedFreqPrior, FourierSig, numStep, StepAmpPrior, WhiteName,whitemodel, varyRedCoeff, varyDMCoeff, incGWB, GWBAmpPrior, RedPriorType, DMPriorType, EQUADPriorType, EFACPriorType, useOriginalErrors, incShannonJitter, incDMEvent, DMEventStartPrior, DMEventLengthPrior,incDMShapeEvent, numDMShapeCoeff, DMShapeCoeffPrior, incRedShapeEvent, numRedShapeCoeff, MarginRedShapeCoeff, RedShapeCoeffPrior, incDMScatterShapeEvent, numDMScatterShapeCoeff, DMScatterShapeCoeffPrior,incBandNoise, numBandNoiseCoeff, BandNoiseAmpPrior, BandNoiseAlphaPrior, incNGJitter, incGlitch, incGlitchTerms, GlitchFitSig, incBreakingIndex, FitLowFreqCutoff, uselongdouble, incGroupNoise, numGroupCoeff, GroupNoiseAmpPrior, GroupNoiseAlphaPrior, FitSolarWind, FitWhiteSolarWind, SolarWindPrior, WhiteSolarWindPrior,  GPTA,  GroupNoiseName, FixProfile, FitTemplate, interpolateProfile, InterpolatedTime, StoreFMatrices, incHighFreqStoc, HighFreqStocPrior, incProfileEvo, EvoRefFreq, ProfileEvoPrior, FitEvoExponent, incWideBandNoise, incProfileFit, ProfileFitPrior, FitLinearProfileWidth, LinearProfileWidthPrior, incDMEQUAD, DMEQUADPrior, offPulseLevel,ProfFile,numProfComponents,incWidthJitter,WidthJitterPrior,JitterProfComp,incProfileEnergyEvo,ProfileEnergyEvoPrior, debug, ProfileBaselineTerms, incProfileNoise, ProfileNoiseCoeff, ProfileNoiseAmpPrior, ProfileNoiseSpecPrior, SubIntToFit, ChannelToFit, NProfileEvoPoly, usecosiprior, incWidthEvoTime, incExtraProfComp, removeBaseline, incPrecession, incTimeCorrProfileNoise, phasePriorExpansion, ProfileNoiseMethod, FitPrecAmps, NProfileTimePoly, incProfileScatter, ScatterPBF); 
 
 	printf("PEP %g \n", phasePriorExpansion);
-
+	
 	FitForGroup = new int*[incGroupNoise];
 	for(int i =0; i < incGroupNoise; i++){
 		FitForGroup[i] = new int[6];
@@ -3195,13 +3195,13 @@ extern "C" int graphicalInterface(int argc, char **argv,
 
 
 	if(incDMShapeEvent > 0 ){
-		for(int i =0;i < incDMShapeEvent; i++){
-
-	                Dpriors[pcount][0]=DMEventStartPrior[0];
-	                Dpriors[pcount][1]=DMEventStartPrior[1];
+	  for(int i =0;i < incDMShapeEvent; i++){
+	    printf("Event = %d p = %lf,%lf \n", i,DMEventStartPrior[0 + i*2], DMEventStartPrior[1 + i*2]);
+	                Dpriors[pcount][0]=DMEventStartPrior[0 + i*2];
+	                Dpriors[pcount][1]=DMEventStartPrior[1 + i*2];
 	                pcount++;
-	                Dpriors[pcount][0]=DMEventLengthPrior[0];
-	                Dpriors[pcount][1]=DMEventLengthPrior[1];
+	                Dpriors[pcount][0]=DMEventLengthPrior[0 + i*2];
+	                Dpriors[pcount][1]=DMEventLengthPrior[1 + i*2];
 		        pcount++;
 			for(int c =0;c < numDMShapeCoeff; c++){
 			        Dpriors[pcount][0]=DMShapeCoeffPrior[0];
