@@ -1749,7 +1749,6 @@ double  NewLRedMarginLogLike(int &ndim, double *Cube, int &npars, double *Derive
 //////////////////////////////////////////////////////////////////////////////////////////  
 ///////////////////////Do Algebra/////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
-	printf("totalsize = %d\n", totalsize);
 	logtchk("Starting algebra");
 	int savememory = 0;
 	
@@ -1811,17 +1810,10 @@ double  NewLRedMarginLogLike(int &ndim, double *Cube, int &npars, double *Derive
 	double *WorkCoeff2 = new double[totalsize];
 	double *TNT2=new double[totalsize*totalsize];
 	
-	for(int i =0; i < totalsize; i++){
-		for(int j=0 ; j < totalsize; j++){
-			TNT2[i + j*totalsize] = TNT[i + j*totalsize];			
-		}
-	}
-	for(int o1=0;o1<totalsize; o1++){
-		
-		WorkCoeff[o1]=NTd[o1];
-		WorkCoeff2[o1]=NTd[o1];
-	}
-
+	std::memcpy(TNT2, TNT, totalsize*totalsize*sizeof(double));
+	std::memcpy(WorkCoeff, NTd, totalsize * sizeof(double));
+	std::memcpy(WorkCoeff2, NTd, totalsize * sizeof(double));
+	
 	int globalinfo=0;
 	int info=0;
 	double jointdet = 0;	
