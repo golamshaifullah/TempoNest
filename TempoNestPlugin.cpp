@@ -3234,11 +3234,11 @@ extern "C" int graphicalInterface(int argc, char **argv,
 	}
 
 	if(yearlyDM==1){
-		Dpriors[pcount][0]= -0.01;//DMCoeffPrior[0];
-		Dpriors[pcount][1]=  0.01;//DMCoeffPrior[1];
+		Dpriors[pcount][0]=DMCoeffPrior[0];
+		Dpriors[pcount][1]=DMCoeffPrior[1];
 		pcount++;
-		Dpriors[pcount][0]=-0.01;//0;
-		Dpriors[pcount][1]=0.01;//2*M_PI;
+		Dpriors[pcount][0]=0;
+		Dpriors[pcount][1]=2*M_PI;
 		pcount++;
 	}
 
