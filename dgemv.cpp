@@ -1,6 +1,7 @@
 #include <math.h>
 #include <algorithm>
 #include "dgemv.h"
+#include "TKlog.h"
 
 
 void vector_dgemv(double *A, double *vecin,double *vecout,int rowa, int cola, char AT)
