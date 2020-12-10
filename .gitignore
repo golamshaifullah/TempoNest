@@ -49,6 +49,7 @@ autoconf/ltoptions.m4
 autoconf/ltsugar.m4
 autoconf/ltversion.m4
 autoconf/lt~obsolete.m4
+build.log
 lbfgs/compile
 .idea/*
 
