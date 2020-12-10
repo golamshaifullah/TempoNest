@@ -1341,6 +1341,7 @@ void LRedLikeMNWrap(double *Cube, int &ndim, int &npars, double &lnew, void *con
 
 double  NewLRedMarginLogLike(int &ndim, double *Cube, int &npars, double *DerivedParams, void *context){
 
+    logtchk("Entering TempoNest Likelihood");
 	double uniformpriorterm=0;
 	clock_t startClock,endClock;
 
@@ -2680,7 +2681,7 @@ double  NewLRedMarginLogLike(int &ndim, double *Cube, int &npars, double *Derive
 //////////////////////////////////////////////////////////////////////////////////////////  
 ///////////////////////Do Algebra/////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
-
+    logtchk("Starting Algebra");
 	int savememory = 0;
 	
 	double *NTd = new double[totalsize];
@@ -3141,7 +3142,7 @@ double  NewLRedMarginLogLike(int &ndim, double *Cube, int &npars, double *Derive
 
 
 	//printf("CPUChisq: %g %g %g %g %g %g \n",lnew,jointdet,tdet,freqdet,timelike,freqlike);
-
+    logtchk("Exiting TempoNest likelihood");
 
 	return lnew;
 
