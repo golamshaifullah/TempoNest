@@ -330,7 +330,8 @@ double SubIntStocProfLike(int &ndim, double *Cube, int &npars, double *DerivedPa
 void SubIntStocProfLikeMNWrap(double *Cube, int &ndim, int &npars, double &lnew, void *context);
 //non linear timing model likelihood functions
 //double  WhiteLogLike(int &ndim, double *Cube, int &npars, double *DerivedParams, void *context);
-double NewLRedMarginLogLike(int &ndim, double *Cube, int &npars, double *DerivedParams, void *context);
+//double NewLRedMarginLogLike(int &ndim, double *Cube, int &npars, double *DerivedParams, void *context);
+double NewLRedMarginLogLike(double Cube[], int ndim, double phi[], int nDerived, void *context);
 //void LRedLogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context);
 //double LRedNumericalLogLike(int &ndim, double *Cube, int &npars, double *DerivedParams, void *context);
 
@@ -506,3 +507,5 @@ void setFrequencies(char *ConfigFileName, double *SampleFreq, int numRedfreqs, i
 void GetGroupsToFit(char *ConfigFileName, int incGroupNoise, int **FitForGroup, int incBandNoise, int **FitForBand);
 void setShapePriors(char *ConfigFileName, double **ShapePriors, double **BetaPrior, int numcoeff, int numcomps);
 void GetProfileFitInfo(char *ConfigFileName, int numProfComponents, int *numGPTAshapecoeff, int *numProfileFitCoeff, int *numEvoCoeff, int *numFitEvoCoeff, 	int *numGPTAstocshapecoeff, double *ProfCompSeps, double &TemplateChanWidth, int *TimeCorrShapeCoeff, int incExtraComp,  double **FitForExtraComp, int *FitCompWidths, int *FitCompPos);
+
+void TNprior (double cube[], double theta[], int nDims, void *context);

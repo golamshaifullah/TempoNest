@@ -46,7 +46,7 @@
 #include <algorithm>
 #include <float.h>
 #include "multinest.h"
-#include "polychord.h"
+#include "interfaces.hpp"
 #include "TempoNest.h"
 #include <t2fit.h>
 
@@ -64,6 +64,8 @@
 #ifdef HAVE_CULA
 #include <cula_lapack_device.h>
 #endif /* HAVE_CULA */
+
+#include <mpi.h>
 
 /*
 #ifdef HAVE_PSRCHIVE
@@ -2702,6 +2704,15 @@ extern "C" int graphicalInterface(int argc, char **argv,
 	
 	MNS->includeEQsys = includeEQsys;	
 
+	int rank, size;
+	MPI_Comm world_comm;
+	if(sampler==1) {
+	  MPI_Init(&argc, &argv);
+	  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	  MPI_Comm_size(MPI_COMM_WORLD, &size);
+	  MPI_Comm_dup(MPI_COMM_WORLD, &world_comm);
+	}
+
 
 
 /*
@@ -3539,7 +3550,26 @@ extern "C" int graphicalInterface(int argc, char **argv,
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+		// Settings for PolyChord
+		Settings settings(ndims, NDerived);
+		   settings.nlive         = nlive;
+		   settings.num_repeats   = settings.nDims*5;
+		   settings.do_clustering = false;
+		   settings.precision_criterion = 1e-3;
+		   settings.logzero       = -1e30;
+		   settings.base_dir.assign(root);
+		   settings.file_root     = "PC";
+		   settings.write_resume  = true;
+		   settings.read_resume   = true;
+		   settings.write_live    = true;
+		   settings.write_dead    = false;
+		   settings.write_stats   = true;
+		   settings.equals        = true;
+		   settings.posteriors    = true;
+		   settings.cluster_posteriors = false;
+		   settings.feedback      = 1;
+		   settings.compression_factor = 0.36787944117144233; // ad-hoc number take from PC example, TBC
+		   settings.boost_posterior= 5.0;
 
 		if(sample==1){
 
@@ -3549,7 +3579,7 @@ extern "C" int graphicalInterface(int argc, char **argv,
 					 nested::run(IS,mmodal, ceff, nlive, tol, efr, ndims, ndims, nClsPar, maxModes, updInt, Ztol, root, seed, pWrap, fb, resume, outfile, initMPI, logZero, maxiter, LRedGPULikeMNWrap, dumper, context);
 				}
 				if(sampler == 1){
-					chord::Sample(NewLRedMarginGPULogLike, ndims, NDerived, nlive, Nchords,  PriorsArray, root, context, output, do_grades, maxgrade, grades, grade_repeats, hypercube_indices, physical_indices);
+				  run_polychord(NewLRedMarginGPULogLike, TNprior, settings, world_comm);
 				}
 
 			}
@@ -3558,7 +3588,7 @@ extern "C" int graphicalInterface(int argc, char **argv,
 					 nested::run(IS,mmodal, ceff, nlive, tol, efr, ndims, ndims, nClsPar, maxModes, updInt, Ztol, root, seed, pWrap, fb, resume, outfile, initMPI, logZero, maxiter, LRedLikeMNWrap, dumper, context);
 				}
 				if(sampler == 1){
-					chord::Sample(NewLRedMarginLogLike, ndims, NDerived, nlive, Nchords,  PriorsArray, root, context, output, do_grades, maxgrade, grades, grade_repeats, hypercube_indices, physical_indices);
+				  run_polychord(NewLRedMarginLogLike, TNprior, settings, world_comm);
 				}
 	      		}   
 #else
@@ -3566,7 +3596,7 @@ extern "C" int graphicalInterface(int argc, char **argv,
 				nested::run(IS,mmodal, ceff, nlive, tol, efr, ndims, ndims, nClsPar, maxModes, updInt, Ztol, root, seed, pWrap, fb, resume, outfile, initMPI, logZero, maxiter, LRedLikeMNWrap, dumper, context);
                         }
                         if(sampler == 1){
-				chord::Sample(NewLRedMarginLogLike, ndims, NDerived, nlive, Nchords,  PriorsArray, root, context, output, do_grades, maxgrade, grades, grade_repeats, hypercube_indices, physical_indices);
+			  run_polychord(NewLRedMarginLogLike, TNprior, settings, world_comm);
 			}
 #endif 
 		}

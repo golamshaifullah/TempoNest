@@ -31,7 +31,7 @@ temponest_@T2ARCH@_plug_la_INCLUDES=@MULTINEST_CFLAGS@ @CULA_CFLAGS@ @GSL_CFLAGS
 
 else
 
-temponest_@T2ARCH@_plug_la_SOURCES= tempo2pred_int.h T2accel.h tempo2pred.h tempo2Util.h constraints.h TKmatrix.h TKfit.h T2toolkit.h tempo2.h config.h configfile.h configfile.cpp qrdecomp.h qrdecomp.cpp  dgemm.cpp dgesvd.h dpotrs.cpp TempoNest.h dgemm.h dpotrf.cpp dpotrs.h TempoNestLikeFuncs.cpp dgemv.cpp dpotrf.h multinest.h TempoNestTextOutput.cpp dgemv.h dpotri.cpp MultiNestParams.cpp  dgesvd.cpp  dpotri.h TempoNestPlugin.cpp TempoNestParams.cpp TempoNestUtilities.cpp
+temponest_@T2ARCH@_plug_la_SOURCES= tempo2pred_int.h T2accel.h tempo2pred.h tempo2Util.h constraints.h TKmatrix.h TKfit.h T2toolkit.h tempo2.h config.h configfile.h configfile.cpp qrdecomp.h qrdecomp.cpp  dgemm.cpp dgesvd.h dpotrs.cpp TempoNest.h dgemm.h dpotrf.cpp dpotrs.h TempoNestLikeFuncs.cpp dgemv.cpp dpotrf.h multinest.h TempoNestTextOutput.cpp dgemv.h dpotri.cpp MultiNestParams.cpp  dgesvd.cpp  dpotri.h TempoNestPlugin.cpp TempoNestParams.cpp TempoNestUtilities.cpp TNpriors.cpp polychord_c_interface.C
 temponest_@T2ARCH@_plug_la_LIBADD=-lgfortran -ltempo2 -lsofa @MULTINEST_LIBS@ @GSL_LIBS@ @BLAS_LIBS@ @LIBS_LAPACK@ @TEMPO2_LIBS@ 
 temponest_@T2ARCH@_plug_la_INCLUDES=@MULTINEST_CFLAGS@ @GSL_CFLAGS@ @TEMPO2_CFLAGS@ 
 

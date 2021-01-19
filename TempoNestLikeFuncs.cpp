@@ -154,12 +154,8 @@ void TNothplMC(int n,double x,double *pl, int cpos){
 }
 
 
-double  FastNewLRedMarginLogLike(int &ndim, double *Cube, int &npars, double *DerivedParams, void *context){
-
-
-
-
-	
+double  FastNewLRedMarginLogLike(double *Cube, int ndim, double *DerivedParams, int npars, void *context) {
+  
 	printf("In fast like\n");
 	int pcount=0;
 	
@@ -436,8 +432,8 @@ void LRedLikeMNWrap(double *Cube, int &ndim, int &npars, double &lnew, void *con
 	
 	double *DerivedParams = new double[npars];
 
-	double result = NewLRedMarginLogLike(ndim, Cube, npars, DerivedParams, context);
-
+	//double result = NewLRedMarginLogLike(ndim, Cube, npars, DerivedParams, context);
+	double result = NewLRedMarginLogLike(Cube, ndim, DerivedParams, npars, context);
 
 	delete[] DerivedParams;
 
@@ -445,9 +441,16 @@ void LRedLikeMNWrap(double *Cube, int &ndim, int &npars, double &lnew, void *con
 
 }
 
-double  NewLRedMarginLogLike(int &ndim, double *Cube, int &npars, double *DerivedParams, void *context){
+//double  NewLRedMarginLogLike(int &ndim, double *Cube, int &npars, double *DerivedParams, void *context){
+double  NewLRedMarginLogLike(double Cube[], int ndim, double phi[], int nDerived, void *context) {
 
-  logtchk("Entering TempoNest ikelihood");
+  logtchk("Entering TempoNest likelihood");
+	if(((MNStruct *)globalcontext)->sampler == 1){
+	  for(int p=0;p<ndim;p++){
+                Cube[p]=(((MNStruct *)globalcontext)->PriorsArray[p+ndim]-((MNStruct *)globalcontext)->PriorsArray[p])*Cube[p]+((MNStruct *)globalcontext)->PriorsArray[p];
+	  }
+	}
+
 	double uniformpriorterm=0;
 	clock_t startClock,endClock;
 
@@ -462,44 +465,7 @@ double  NewLRedMarginLogLike(int &ndim, double *Cube, int &npars, double *Derive
 	double Fitparams[numfit];
 	double *Resvec=new double[((MNStruct *)globalcontext)->pulse->nobs];
 	int fitcount=0;
-	
 
-	if(((MNStruct *)globalcontext)->doGrades == 1){
-		int slowlike = 0;
-		double myeps = pow(10.0, -10);
-		for(int i = 0; i < ndim; i ++){
-			
-			int slowindex = ((MNStruct *)globalcontext)->hypercube_indices[i]-1;
-
-
-			 printf("Cube: %i %i %i %g %g %g \n", i, slowindex, ((MNStruct *)globalcontext)->PolyChordGrades[slowindex], Cube[i], ((MNStruct *)globalcontext)->LastParams[i], fabs(Cube[i] - ((MNStruct *)globalcontext)->LastParams[i]));
-
-			if(((MNStruct *)globalcontext)->PolyChordGrades[slowindex] == 1){
-
-//				printf("Slow Cube: %i %g %g %g \n", i, Cube[slowindex], ((MNStruct *)globalcontext)->LastParams[slowindex], fabs(Cube[slowindex] - ((MNStruct *)globalcontext)->LastParams[slowindex]));
-
-				if(fabs(Cube[slowindex] - ((MNStruct *)globalcontext)->LastParams[slowindex]) > myeps){
-					slowlike = 1;
-				}
-			}
-
-			((MNStruct *)globalcontext)->LastParams[i] = Cube[i];
-		}
-
-		if(slowlike == 0){
-
-			double lnew = 0;
-			if(((MNStruct *)globalcontext)->PreviousInfo == 0){
-				lnew = FastNewLRedMarginLogLike(ndim, Cube, npars, DerivedParams, context);
-			}
-			else if(((MNStruct *)globalcontext)->PreviousInfo == 1){
-				lnew = -pow(10.0,20);
-			}
-
-			return lnew;
-		}
-	}
-				
 
 	pcount=0;
 	///////////////hacky glitch thing for Vela, comment this out for *anything else*/////////////////////////
@@ -514,6 +480,8 @@ double  NewLRedMarginLogLike(int &ndim, double *Cube, int &npars, double *Derive
 
 	///////////////end of hacky glitch thing for Vela///////////////////////////////////////////////////////
 
+
+	// Convert priors to physical units (here only for timing parameters and jumps)
 	for(int p=0;p< ((MNStruct *)globalcontext)->numFitTiming + ((MNStruct *)globalcontext)->numFitJumps; p++){
 		if(((MNStruct *)globalcontext)->Dpriors[p][1] != ((MNStruct *)globalcontext)->Dpriors[p][0]){
 			double val = 0;
