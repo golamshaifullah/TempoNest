@@ -3551,14 +3551,19 @@ extern "C" int graphicalInterface(int argc, char **argv,
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// Settings for PolyChord
+
+		std::size_t DirPos = longname.find_last_of("/");
+		std::string dir = longname.substr(0, DirPos);
+		std::string sfn = longname.substr(DirPos, longname.length());
+		
 		Settings settings(ndims, NDerived);
 		   settings.nlive         = nlive;
 		   settings.num_repeats   = settings.nDims*5;
 		   settings.do_clustering = false;
 		   settings.precision_criterion = 1e-3;
 		   settings.logzero       = -1e30;
-		   settings.base_dir.assign(root);
-		   settings.file_root     = "PC";
+		   settings.base_dir      = dir;
+		   settings.file_root     = sfn;
 		   settings.write_resume  = true;
 		   settings.read_resume   = true;
 		   settings.write_live    = true;
