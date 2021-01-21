@@ -445,11 +445,6 @@ void LRedLikeMNWrap(double *Cube, int &ndim, int &npars, double &lnew, void *con
 double  NewLRedMarginLogLike(double Cube[], int ndim, double phi[], int nDerived, void *context) {
 
   logtchk("Entering TempoNest likelihood");
-	if(((MNStruct *)globalcontext)->sampler == 1){
-	  for(int p=0;p<ndim;p++){
-                Cube[p]=(((MNStruct *)globalcontext)->PriorsArray[p+ndim]-((MNStruct *)globalcontext)->PriorsArray[p])*Cube[p]+((MNStruct *)globalcontext)->PriorsArray[p];
-	  }
-	}
 
 	double uniformpriorterm=0;
 	clock_t startClock,endClock;
