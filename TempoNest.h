@@ -103,9 +103,13 @@ typedef struct {
 	int useOriginalErrors;
 	int incShannonJitter;
 	int incNGJitter;
+        int incNGSJitter;
 	int numNGJitterEpochs;
+        int numNGSJitterEpochs;
 	double **NGJitterMatrix;
+        double **NGSJitterMatrix;
 	int *NGJitterSysFlags;
+        int *NGSJitterSysFlags;
 	int incGlitch;
 	int incGlitchTerms;
 	int incBreakingIndex;
@@ -361,8 +365,13 @@ void getCustomDMatrix(pulsar *pulse, int *MarginList, int **TempoFitNums, int *T
 //void makeStaticDiagGMatrix(pulsar *pulse, int Gsize, double **GMatrix, double** UMatrix, double *SVec);
 void getCustomDMatrixLike(void *context, double **TNDM);
 void getCustomDVectorLike(void *context, double *TNDM, int nobs, int TimeToMargin, int TotalSize);
+
 void getNGJitterMatrix(pulsar *pulse, double **JitterMatrix, int &NumEpochs);
+void getNGSJitterMatrix(pulsar *pulse, double **JitterMatrix, int &NumEpochs);
+
 void getNGJitterMatrixEpochs(pulsar *pulse, int &NumEpochs);
+void getNGSJitterMatrixEpochs(pulsar *pulse, int &NumEpochs);
+
 void StoreTMatrix(double *TMatrix, void *context);
 void getArraySizeInfo(void *context);
 void getPhysDVector(void *context, double **TNDM, int Nobs, int *TimingGradientSigns);
@@ -438,6 +447,7 @@ void setupparams(char *ConfigFileName, int &useGPUS,
 		double *BandNoiseAmpPrior,
 		double *BandNoiseAlphaPrior,
 		int &incNGJitter,
+                int &incNGSJitter,
 		int &incGlitch,
                 int &incGlitchTerms,
                 double &GlitchFitSig,

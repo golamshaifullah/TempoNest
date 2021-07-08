@@ -600,6 +600,96 @@ void getNGJitterMatrixEpochs(pulsar *pulse, int &NumEpochs){
 
 }
 
+void getNGSJitterMatrixEpochs(pulsar *pulse, int &NumEpochs){
+
+
+	// count SECORR values
+	if(pulse->nTNSECORR > 0){
+		for(int i=0; i<pulse->nTNSECORR; i++){
+			printf("\nIncluding SECORR value for backend %s: %g mus", \
+					pulse->TNSECORRFlagVal[i], pulse->TNSECORRVal[i]);
+
+		}
+	}
+
+
+	// find number of epochs (default dt= 10 s)
+	int *Processed = new int[pulse->nobs];
+
+	// initialize processed flags
+	for (int i=0;i<pulse->nobs;i++){
+		Processed[i] = 1;
+	}
+
+	// make sure we only process the epochs with the chosen flags
+	for (int i=0;i<pulse->nobs;i++){
+		for (int j=0;j<pulse->obsn[i].nFlags;j++){
+			for (int k=0;k<pulse->nTNSECORR;k++){
+				if (strcmp(pulse->obsn[i].flagID[j], pulse->TNSECORRFlagID[k])==0){
+					if (strcmp(pulse->obsn[i].flagVal[j],pulse->TNSECORRFlagVal[k])==0){
+						Processed[i] = 0;
+					}
+				}
+			}
+		}
+	}
+
+
+	double dt = 10.0 / SECDAY;
+	double satmin;
+	double satmax;
+	int nepoch = 0;
+	int in = 0;
+	int allProcessed = 0;
+	while (!allProcessed){
+		for (int i=0;i<pulse->nobs;i++){
+			if (Processed[i]==0){
+				satmin = (double)pulse->obsn[i].bat - dt;
+				satmax = (double)pulse->obsn[i].bat + dt;
+				break;
+			}
+		}
+		for (int i=0;i<pulse->nobs;i++){
+			for (int j=0;j<pulse->obsn[i].nFlags;j++){
+				for (int k=0;k<pulse->nTNSECORR;k++){
+					if (strcmp(pulse->obsn[i].flagID[j], pulse->TNSECORRFlagID[k])==0){
+						if (strcmp(pulse->obsn[i].flagVal[j],pulse->TNSECORRFlagVal[k])==0){
+							if ((double)pulse->obsn[i].bat > satmin && \
+									(double)pulse->obsn[i].bat < satmax){
+								Processed[i] = 1;
+								in++;
+							}
+						}
+					}
+				}
+			}
+		}
+		if (in != 0){
+			nepoch++;
+			in = 0;
+		}
+		allProcessed = 1;
+		for (int i=0;i<pulse->nobs;i++){
+			if (Processed[i]==0){
+				allProcessed = 0;
+				break;
+			}
+		}
+	}
+
+
+	if (nepoch > 0){
+		printf("\n\nUsing %d epochs for PSR %s\n\n", nepoch, pulse->name);
+	}
+
+	NumEpochs=nepoch;
+
+
+}
+
+
+
+
 void getNGJitterMatrix(pulsar *pulse, double **JitterMatrix, int &NumEpochs){
 
 
@@ -752,6 +842,162 @@ void getNGJitterMatrix(pulsar *pulse, double **JitterMatrix, int &NumEpochs){
 
 
 }
+
+
+void getNGSJitterMatrix(pulsar *pulse, double **JitterMatrix, int &NumEpochs){
+
+
+	// count SECORR values
+	if(pulse->nTNSECORR > 0){
+		for(int i=0; i<pulse->nTNSECORR; i++){
+			printf("\nIncluding SECORR value for backend %s: %g mus", \
+					pulse->TNSECORRFlagVal[i], pulse->TNSECORRVal[i]);
+
+		}
+	}
+
+
+	// find number of epochs (default dt= 10 s)
+	int *Processed = new int[pulse->nobs];
+
+	// initialize processed flags
+	for (int i=0;i<pulse->nobs;i++){
+		Processed[i] = 1;
+	}
+
+	// make sure we only process the epochs with the chosen flags
+	for (int i=0;i<pulse->nobs;i++){
+		for (int j=0;j<pulse->obsn[i].nFlags;j++){
+			for (int k=0;k<pulse->nTNSECORR;k++){
+				if (strcmp(pulse->obsn[i].flagID[j], pulse->TNSECORRFlagID[k])==0){
+					if (strcmp(pulse->obsn[i].flagVal[j],pulse->TNSECORRFlagVal[k])==0){
+						Processed[i] = 0;
+					}
+				}
+			}
+		}
+	}
+
+
+	double dt = 10.0 / SECDAY;
+	double satmin;
+	double satmax;
+	int nepoch = 0;
+	int in = 0;
+	int allProcessed = 0;
+	while (!allProcessed){
+		for (int i=0;i<pulse->nobs;i++){
+			if (Processed[i]==0){
+				satmin = (double)pulse->obsn[i].bat - dt;
+				satmax = (double)pulse->obsn[i].bat + dt;
+				break;
+			}
+		}
+		for (int i=0;i<pulse->nobs;i++){
+			for (int j=0;j<pulse->obsn[i].nFlags;j++){
+				for (int k=0;k<pulse->nTNSECORR;k++){
+					if (strcmp(pulse->obsn[i].flagID[j], pulse->TNSECORRFlagID[k])==0){
+						if (strcmp(pulse->obsn[i].flagVal[j],pulse->TNSECORRFlagVal[k])==0){
+							if ((double)pulse->obsn[i].bat > satmin && \
+									(double)pulse->obsn[i].bat < satmax){
+								Processed[i] = 1;
+								in++;
+							}
+						}
+					}
+				}
+			}
+		}
+		if (in != 0){
+			nepoch++;
+			in = 0;
+		}
+		allProcessed = 1;
+		for (int i=0;i<pulse->nobs;i++){
+			if (Processed[i]==0){
+				allProcessed = 0;
+				break;
+			}
+		}
+	}
+
+
+	if (nepoch > 0){
+		printf("\n\nUsing %d epochs for PSR %s\n\n", nepoch, pulse->name);
+	}
+
+	NumEpochs=nepoch;
+
+
+
+	// initialize processed flags
+	for (int i=0;i<pulse->nobs;i++){
+		Processed[i] = 1;
+	}
+
+	// make sure we only process the epochs with the chosen flags
+	for (int i=0;i<pulse->nobs;i++){
+		for (int j=0;j<pulse->obsn[i].nFlags;j++){
+			for (int k=0;k<pulse->nTNSECORR;k++){
+				if (strcmp(pulse->obsn[i].flagID[j], pulse->TNSECORRFlagID[k])==0){
+					if (strcmp(pulse->obsn[i].flagVal[j],pulse->TNSECORRFlagVal[k])==0){
+						Processed[i] = 0;
+					}
+				}
+			}
+		}
+	}
+
+
+	nepoch = 0;
+	in = 0;
+	allProcessed = 0;
+	while (!allProcessed){
+		for (int i=0;i<pulse->nobs;i++){
+			if (Processed[i]==0){
+				satmin = (double)pulse->obsn[i].bat - dt;
+				satmax = (double)pulse->obsn[i].bat + dt;
+				break;
+			}
+		}
+		for (int i=0;i<pulse->nobs;i++){
+			for (int j=0;j<pulse->obsn[i].nFlags;j++){
+				for (int k=0;k<pulse->nTNSECORR;k++){
+					if (strcmp(pulse->obsn[i].flagID[j], pulse->TNSECORRFlagID[k])==0){
+						if (strcmp(pulse->obsn[i].flagVal[j],pulse->TNSECORRFlagVal[k])==0){
+							if ((double)pulse->obsn[i].bat > satmin && \
+									(double)pulse->obsn[i].bat < satmax){
+								Processed[i] = 1;
+								JitterMatrix[i][nepoch] = 1./sqrt(pulse->obsn[i].tobs/3600.);
+								in++;
+							}
+							else{
+								JitterMatrix[i][nepoch] = 0;
+							}
+						}
+					}
+				}
+			}
+		}
+		if (in != 0){
+			nepoch++;
+			in = 0;
+		}
+		allProcessed = 1;
+		for (int i=0;i<pulse->nobs;i++){
+			if (Processed[i]==0){
+				allProcessed = 0;
+				break;
+			}
+		}
+	}
+
+
+
+
+}
+
+
 
 
 void getCustomDMatrix(pulsar *pulse, int *MarginList, int **TempoFitNums, int *TempoJumpNums, double **Dpriors, int incDM, int TimetoFit, int JumptoFit){
@@ -1975,6 +2221,68 @@ void StoreTMatrix(double *TotalMatrix, void *context){
 	}
 
 
+        //// ADDING SECORR 
+
+
+	if(((MNStruct *)context)->incNGSJitter > 0){
+
+		//printf("Calling\n");
+		double **NGSJitterMatrix;
+		int NumNGSEpochs = ((MNStruct *)context)->numNGSJitterEpochs;
+		//getNGJitterMatrixEpochs(psr, NumNGEpochs);
+
+		NGSJitterMatrix = new double*[((MNStruct *)context)->pulse->nobs];
+		for(int i =0; i < ((MNStruct *)context)->pulse->nobs; i++){
+			NGSJitterMatrix[i] = new double[NumNGSEpochs];
+			for(int j =0; j < NumNGSEpochs;  j++){
+				NGSJitterMatrix[i][j] = 0;
+			}
+		}
+		int *NGSJitterSysFlags = new int[((MNStruct *)context)->pulse->nobs];
+		
+
+		for (int i=0;i<((MNStruct *)context)->pulse->nobs;i++){
+			for (int j=0;j<((MNStruct *)context)->pulse->obsn[i].nFlags;j++){
+				for (int k=0;k<((MNStruct *)context)->pulse->nTNSECORR;k++){
+					if (strcmp(((MNStruct *)context)->pulse->obsn[i].flagID[j], ((MNStruct *)context)->pulse->TNSECORRFlagID[k])==0){
+						if (strcmp(((MNStruct *)context)->pulse->obsn[i].flagVal[j],((MNStruct *)context)->pulse->TNSECORRFlagVal[k])==0){
+							NGSJitterSysFlags[i] = k;
+							//printf("NGFLag? %i %i %s \n", i, k, psr->TNECORRFlagVal[k]);
+						}
+					}
+				}
+			}
+		}
+
+
+		getNGSJitterMatrix(((MNStruct *)context)->pulse, NGSJitterMatrix, NumNGSEpochs);
+
+		int *NGSJitterEpochFlags = new int[NumNGSEpochs];
+
+		for(int i =0; i < NumNGSEpochs; i++){
+			for(int j=0; j < ((MNStruct *)context)->pulse->nobs; j++){
+				if(NGSJitterMatrix[j][i] != 0) {
+					NGSJitterEpochFlags[i]=NGSJitterSysFlags[j];
+				}
+			}
+		}
+
+		((MNStruct *)context)->NGSJitterSysFlags=NGSJitterEpochFlags;
+
+		for(int k=0;k<((MNStruct *)context)->pulse->nobs;k++){
+			for(int i=0; i < ((MNStruct *)context)->numNGSJitterEpochs; i++){
+				TotalMatrix[k + (i+TimetoMargin+startpos)*((MNStruct *)context)->pulse->nobs] = NGSJitterMatrix[k][i];///sqrt((((MNStruct *)context)->TobsInfo[k]/3600.0));
+			}
+		}
+
+		delete[] NGSJitterSysFlags;
+		for(int j =0; j < ((MNStruct *)context)->pulse->nobs;  j++){
+			delete[] NGSJitterMatrix[j];
+		}
+		delete[]NGSJitterMatrix;
+
+
+	}
 
 
 
@@ -2037,12 +2345,21 @@ void getArraySizeInfo(void *context){
 		getNGJitterMatrixEpochs(((MNStruct *)context)->pulse, NumNGEpochs);
 	}
 	((MNStruct *)context)->numNGJitterEpochs = NumNGEpochs;
+        
+	int NumNGSEpochs = 0;
+	if(((MNStruct *)context)->incNGSJitter > 0){
+		getNGSJitterMatrixEpochs(((MNStruct *)context)->pulse, NumNGSEpochs);
+	}
+	((MNStruct *)context)->numNGSJitterEpochs = NumNGSEpochs;
+
+
 
 	int totCoeff=0;
 	if(((MNStruct *)context)->incRED != 0 || ((MNStruct *)context)->incGWB == 1)totCoeff+=FitRedCoeff;
 	if(((MNStruct *)context)->incDM != 0)totCoeff+=FitDMCoeff;
 	if(((MNStruct *)context)->incBandNoise > 0)totCoeff+= ((MNStruct *)context)->incBandNoise*FitBandNoiseCoeff;
 	if(((MNStruct *)context)->incNGJitter >0)totCoeff+=((MNStruct *)context)->numNGJitterEpochs;
+	if(((MNStruct *)context)->incNGSJitter >0)totCoeff+=((MNStruct *)context)->numNGSJitterEpochs;
 	if(((MNStruct *)context)->incGroupNoise > 0)totCoeff += ((MNStruct *)context)->incGroupNoise*FitGroupNoiseCoeff;
 
 

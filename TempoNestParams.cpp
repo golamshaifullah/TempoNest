@@ -97,6 +97,7 @@ void setupparams(char *ConfigFileName, int &useGPUS,
 		double *BandNoiseAmpPrior,
 		double *BandNoiseAlphaPrior,
 		int &incNGJitter,
+                int &incNGSJitter,
 		int &incGlitch,
 		int &incGlitchTerms,
 		double &GlitchFitSig,
@@ -213,6 +214,7 @@ void setupparams(char *ConfigFileName, int &useGPUS,
 	EPolyTerms = 1; //Number of terms to include in EFAC polynomial (A*TOAerr + B*TOAERR^2 etc)
 	incEQUAD=0; //include EQUAD: 0 = no, 1 = yes
 	incNGJitter = 0; //Include NG Jitter for systems flagged in par file
+        incNGSJitter = 0; //Include NGS Jitter for systems flagged in the par file (Aditya, Ryan)
 	incDMEQUAD = 0;
 
 	JitterProfComp = 0;
@@ -529,6 +531,7 @@ void setupparams(char *ConfigFileName, int &useGPUS,
 	parameters.readInto(useOriginalErrors, "useOriginalErrors", useOriginalErrors);
 	parameters.readInto(incShannonJitter, "incShannonJitter", incShannonJitter);
 	parameters.readInto(incNGJitter, "incNGJitter", incNGJitter);
+	parameters.readInto(incNGSJitter, "incNGSJitter", incNGSJitter);
 	parameters.readInto(incGlitch, "incGlitch", incGlitch);
         parameters.readInto(incGlitchTerms, "incGlitchTerms", incGlitchTerms);        
 	parameters.readInto(GlitchFitSig, "GlitchFitSig", GlitchFitSig);	

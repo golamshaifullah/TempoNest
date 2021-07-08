@@ -1404,6 +1404,14 @@ void TNtextOutput(pulsar *psr, int npsr, int newpar, long double *Tempo2Fit, voi
                     }
 
 
+	    if(((MNStruct *)context)->incNGSJitter >0){
+
+		for(int i =0; i < ((MNStruct *)context)->incNGSJitter; i++){
+			fprintf(fout2, "TNSECORR %s %s %g\n", ((MNStruct *)context)->whiteflag, psr->TNSECORRFlagVal[i],pow(10.0,paramarray[whitefitcount][2])/pow(10.0,-6));
+                            tablefile <<  "Log$_{10}$[TNSECORR] "<< ((MNStruct *)context)->whiteflag <<" "<< ((MNStruct *)context)->pulse[0].obsn[systempos[i]].flagVal[sysflag[i]] <<" \\dotfill & "<< paramarray[whitefitcount][0] <<" $\\pm$ "<< paramarray[whitefitcount][1] <<"  \\\\ \n";
+                            whitefitcount++;
+                    }
+
 
             }
 

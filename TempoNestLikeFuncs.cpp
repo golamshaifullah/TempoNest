@@ -771,6 +771,26 @@ double  NewLRedMarginLogLike(double Cube[], int ndim, double phi[], int nDerived
 		delete[] ECorrCoeffs;
 	} 
 
+
+
+        double *SECORRPrior;
+	if(((MNStruct *)globalcontext)->incNGSJitter >0){
+		double *SECorrCoeffs=new double[((MNStruct *)globalcontext)->incNGSJitter];	
+		for(int i =0; i < ((MNStruct *)globalcontext)->incNGSJitter; i++){
+			SECorrCoeffs[i] = pow(10.0, 2*Cube[pcount]);
+			if(((MNStruct *)globalcontext)->EQUADPriorType ==1) { uniformpriorterm +=log(pow(10.0,Cube[pcount])); }
+			pcount++;
+		}
+    		SECORRPrior = new double[((MNStruct *)globalcontext)->numNGSJitterEpochs];
+		for(int i =0; i < ((MNStruct *)globalcontext)->numNGSJitterEpochs; i++){
+			SECORRPrior[i] = SECorrCoeffs[((MNStruct *)globalcontext)->NGSJitterSysFlags[i]];
+		}
+
+		delete[] SECorrCoeffs;
+	} 
+
+
+
 	double DMEQUAD = 0;
 	if(((MNStruct *)globalcontext)->incDMEQUAD > 0){
 		DMEQUAD = pow(10.0, Cube[pcount]);
@@ -1681,6 +1701,14 @@ double  NewLRedMarginLogLike(double Cube[], int ndim, double phi[], int nDerived
 	}
 
 
+        if(((MNStruct *)globalcontext)->incNGSJitter >0){
+		for(int i =0; i < ((MNStruct *)globalcontext)->numNGSJitterEpochs; i++){
+			powercoeff[startpos+i] = SECORRPrior[i];
+			freqdet = freqdet + log(SECORRPrior[i]);
+		}
+	}
+
+
 
 
 
@@ -1832,6 +1860,11 @@ double  NewLRedMarginLogLike(double Cube[], int ndim, double phi[], int nDerived
 	if(((MNStruct *)globalcontext)->incNGJitter >0){
 		delete[] ECORRPrior;
 	}
+
+        if(((MNStruct *)globalcontext)->incNGSJitter >0){
+		delete[] SECORRPrior;
+	}
+
 
 	if(totalredshapecoeff > 0){
 		for (int j = 0; j < ((MNStruct *)globalcontext)->pulse->nobs; j++){
