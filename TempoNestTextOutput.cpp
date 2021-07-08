@@ -1403,6 +1403,8 @@ void TNtextOutput(pulsar *psr, int npsr, int newpar, long double *Tempo2Fit, voi
                             whitefitcount++;
                     }
 
+            }
+
 
 	    if(((MNStruct *)context)->incNGSJitter >0){
 
