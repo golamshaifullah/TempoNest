@@ -425,7 +425,7 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 	for (int p=0;p<MAX_PARAMS;p++) {
 	  for (int k=0;k<psr[0].param[p].aSize;k++){
 	    if(psr[0].param[p].fitFlag[k] == 1 && p != param_dmmodel){
-	      if(TempoPriors[paramsfitted][2] == 0 ((MNStruct *)context)->rank==0){			
+	      if(TempoPriors[paramsfitted][2] == 0 && ((MNStruct *)context)->rank==0){
 		printf("Prior on %s : %.25Lg -> %.25Lg\n",psr[0].param[p].shortlabel[k], TempoPriors[paramsfitted][0]+Dpriors[paramsfitted][0]*TempoPriors[paramsfitted][1],TempoPriors[paramsfitted][0]+Dpriors[paramsfitted][1]*TempoPriors[paramsfitted][1]);
 	      }
 	      
@@ -1514,7 +1514,6 @@ extern "C" int graphicalInterface(int argc, char **argv,
 	const char *CVS_verNum = "$Revision: 1.28 $";
 	int numFitJumps;
 	int numToMargin=0;
-	int myrank = 0;
 	int nprocs = 0;
 	char *ConfigFileName;
 
@@ -2058,9 +2057,7 @@ extern "C" int graphicalInterface(int argc, char **argv,
 	  if (iteration==1 || onlypre==1)
 	    {
 	      if (strlen(outputSO)==0){
-	      //printf("CHI SQ IS: %g \n",psr->fitChisq);
-		textOutput(psr,npsr,globalParameter,nGlobal,outRes,newpar,newparname); /* Output results to the screen */
-		//printf("CHI SQ IS: %g %g %g \n",psr->fitChisq,psr[0].offset,psr[0].offset_e);
+		if (rank==0) textOutput(psr,npsr,globalParameter,nGlobal,outRes,newpar,newparname); /* Output results to the screen */
 		}
 	      else  /* Use a plug in for the output */
 		{
@@ -2380,7 +2377,7 @@ extern "C" int graphicalInterface(int argc, char **argv,
 
 		GroupStartTimes = new double*[GroupNoiseSysCount];
 		for(int o = 0; o < GroupNoiseSysCount; o++){
-		  if (rank==0) printf("Group Times: %i %g %g \n", l, GroupStartTimes[l][0], GroupStartTimes[l][1]);
+		  if (rank==0) printf("Group Times: %i %g %g \n", o, GroupStartTimes[o][0], GroupStartTimes[o][1]);
 		  GroupStartTimes[o] = new double[2];
 		  GroupStartTimes[o][0] = 100000;
 		  GroupStartTimes[o][1] = 0;
@@ -4866,7 +4863,7 @@ extern "C" int graphicalInterface(int argc, char **argv,
 	*/
 	
 
-	if(myrank == 0){
+	if(rank == 0){
 		readsummary(psr,longname, ndims,context,  Tempo2Fit,incRED, ndims, doTimeMargin, doJumpMargin,doLinearFit);
 
 
