@@ -322,8 +322,8 @@ void setupparams(char *ConfigFileName, int &useGPUS,
 	WhiteSolarWindPrior[0] = -3;
 	WhiteSolarWindPrior[1] = 3;
 	
-	numRedPL=0;
-	numDMPL=0;
+	numRedPL=1;
+	numDMPL=1;
 
 	numRedCoeff=10;
 	numDMCoeff=10;
