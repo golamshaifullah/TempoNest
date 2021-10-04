@@ -274,7 +274,7 @@ typedef struct {
 	int *hypercube_indices;
 
 	int debug;
-
+  int rank;
 } MNStruct;
 
 
