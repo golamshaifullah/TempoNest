@@ -404,14 +404,14 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 
 	std::ofstream getdistparamnames;
 	std::string gdpnfname = longname+".paramnames";
+	std::string latexvar;
 	getdistparamnames.open(gdpnfname.c_str());
 	
 	int getdistlabel=1;
 
 	if(TempoPriors[0][2] == 0){
-		getdistparamnames << getdistlabel;
-		getdistparamnames << " ";
-		getdistparamnames <<  "Phase\n";
+		getdistparamnames << "Phase ";
+		getdistparamnames <<  "\\phi\n";
 		getdistlabel++;
 	}
 	
@@ -424,16 +424,38 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 	
 	for (int p=0;p<MAX_PARAMS;p++) {
 	  for (int k=0;k<psr[0].param[p].aSize;k++){
+	    if (p==param_raj) latexvar="\\alpha";
+	    else if (p==param_decj) latexvar="\\delta";
+	    else if (p==param_pmra) latexvar="\\mu_\\alpha";
+	    else if (p==param_decj) latexvar="\\mu_\\delta";
+	    else if (p==param_px) latexvar="\\pi";
+	    else if (p==param_sini) latexvar="\\sin i";
+	    else if (p==param_pb) latexvar="P_b";
+	    else if (p==param_t0) latexvar="T_0";
+	    else if (p==param_ecc) latexvar="e";
+	    else if (p==param_pbdot) latexvar="\\dot{P_bb}";
+	    else if (p==param_om) latexvar="\\omega";
+	    else if (p==param_omdot) latexvar="\\dot{\\omega}";
+	    else if (p==param_tasc) latexvar="T_{\\text{asc}}}";
+	    else if (p==param_m2) latexvar="m_2";
+	    else if (p==param_eps1) latexvar="\\kappa";
+	    else if (p==param_eps2) latexvar="\\eta";
+	    else if (p==param_gamma) latexvar="\\gamma";
+	    else if (p==param_f && k==0) latexvar="\\nu";
+	    else if (p==param_f && k==1) latexvar="\\dot{\\nu}";
+	    else if (p==param_f && k==2) latexvar="\\ddot{\\nu}";
+	    else if (p==param_dm && k==0) latexvar="\\text{DM}";
+	    else if (p==param_dm && k==1) latexvar="\\text{DM1}";
+	    else if (p==param_dm && k==2) latexvar="\\text{DM2}";
+	    else latexvar = psr[0].param[p].shortlabel[k];
+	    
 	    if(psr[0].param[p].fitFlag[k] == 1 && p != param_dmmodel){
 	      if(TempoPriors[paramsfitted][2] == 0 && ((MNStruct *)context)->rank==0){
 		printf("Prior on %s : %.25Lg -> %.25Lg\n",psr[0].param[p].shortlabel[k], TempoPriors[paramsfitted][0]+Dpriors[paramsfitted][0]*TempoPriors[paramsfitted][1],TempoPriors[paramsfitted][0]+Dpriors[paramsfitted][1]*TempoPriors[paramsfitted][1]);
 	      }
 	      
 	      if(TempoPriors[paramsfitted][2] == 0){
-		getdistparamnames << getdistlabel;
-		getdistparamnames << " ";
-		getdistparamnames <<  psr[0].param[p].shortlabel[k];
-		getdistparamnames << "\n";
+		getdistparamnames <<  psr[0].param[p].shortlabel[k] + " " << latexvar << "\n";
 		getdistlabel++;
 	      }
 	      paramsfitted++;
