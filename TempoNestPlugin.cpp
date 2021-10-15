@@ -407,12 +407,8 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 	std::string latexvar;
 	getdistparamnames.open(gdpnfname.c_str());
 	
-	int getdistlabel=1;
-
 	if(TempoPriors[0][2] == 0){
-		getdistparamnames << "Phase ";
-		getdistparamnames <<  "\\phi\n";
-		getdistlabel++;
+	  getdistparamnames << "Phase \\phi\n";
 	}
 	
 	if (((MNStruct *)context)->rank==0) printf("\nPriors:\n");
@@ -427,7 +423,7 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 	    if (p==param_raj) latexvar="\\alpha";
 	    else if (p==param_decj) latexvar="\\delta";
 	    else if (p==param_pmra) latexvar="\\mu_\\alpha";
-	    else if (p==param_decj) latexvar="\\mu_\\delta";
+	    else if (p==param_pmdec) latexvar="\\mu_\\delta";
 	    else if (p==param_px) latexvar="\\pi";
 	    else if (p==param_sini) latexvar="\\sin i";
 	    else if (p==param_pb) latexvar="P_b";
@@ -436,7 +432,7 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 	    else if (p==param_pbdot) latexvar="\\dot{P_bb}";
 	    else if (p==param_om) latexvar="\\omega";
 	    else if (p==param_omdot) latexvar="\\dot{\\omega}";
-	    else if (p==param_tasc) latexvar="T_{\\text{asc}}}";
+	    else if (p==param_tasc) latexvar="T_{\\text{asc}";
 	    else if (p==param_m2) latexvar="m_2";
 	    else if (p==param_eps1) latexvar="\\kappa";
 	    else if (p==param_eps2) latexvar="\\eta";
@@ -455,8 +451,7 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 	      }
 	      
 	      if(TempoPriors[paramsfitted][2] == 0){
-		getdistparamnames <<  psr[0].param[p].shortlabel[k] + " " << latexvar << "\n";
-		getdistlabel++;
+		getdistparamnames <<  psr[0].param[p].shortlabel[k]<< " " << latexvar << "\n";
 	      }
 	      paramsfitted++;
 	    }
@@ -471,13 +466,7 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 	
 			  if (((MNStruct *)context)->rank==0) printf("Prior on Jump %i : %.25Lg -> %.25Lg\n",jumpsfitted+1, TempoPriors[paramsfitted][0]+Dpriors[paramsfitted][0]*TempoPriors[paramsfitted][1],TempoPriors[paramsfitted][0]+Dpriors[paramsfitted][1]*TempoPriors[paramsfitted][1]);
 			
-				getdistparamnames << getdistlabel;
-				getdistparamnames << " ";
-				getdistparamnames <<  "Jump";
-				getdistparamnames << jumpsfitted+1;
-				getdistparamnames << "\n";
-				getdistlabel++;
-
+			  getdistparamnames <<  "Jump"<< jumpsfitted+1 << " \\text{Jump" << jumpsfitted+1 <<"}\n";
 			}
 
 			paramsfitted++;
@@ -487,24 +476,9 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 
 	if(incStep>0){
 		for(int i =0; i < incStep; i++){
-			getdistparamnames << getdistlabel;
-			getdistparamnames << " ";
-			getdistparamnames <<  "StepG";
-			getdistparamnames <<  i+1;
-			getdistparamnames << "\n";
-			getdistlabel++;
-			getdistparamnames << getdistlabel;
-			getdistparamnames << " ";
-			getdistparamnames <<  "StepT";
-			getdistparamnames <<  i+1;
-			getdistparamnames << "\n";
-			getdistlabel++;
-			getdistparamnames << getdistlabel;
-			getdistparamnames << " ";
-			getdistparamnames <<  "StepA";
-			getdistparamnames <<  i+1;
-			getdistparamnames << "\n";
-			getdistlabel++;
+			getdistparamnames <<  "StepG"<< i+1 << " \\text{StepG" << i+1 <<"}\n";
+			getdistparamnames <<  "StepT"<< i+1 << " \\text{StepT" << i+1 <<"}\n";
+			getdistparamnames <<  "StepA"<< i+1 << " \\text{StepA" << i+1 <<"}\n";
 
 			if (((MNStruct *)context)->rank==0) printf("Prior for Step Group: %i %g %g \n",i,Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 			paramsfitted++;	
@@ -519,56 +493,31 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 
 	if(((MNStruct *)context)->incGlitch>0){
 		for(int i =0; i < ((MNStruct *)context)->incGlitch; i++){
-			                                getdistparamnames << getdistlabel;
-			getdistparamnames << " ";
-			getdistparamnames <<  "GlitchMJD";
-			getdistparamnames <<  i+1;
-			getdistparamnames << "\n";
-			getdistlabel++;
+			getdistparamnames <<  "GlitchMJD"<< i+1 << " \\text{GlitchMJD" << i+1 <<"}\n";
 
 			if (((MNStruct *)context)->rank==0) printf("Prior for Glitch Epoch: %i %g %g \n",i,Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 			paramsfitted++;
 
 			if(((MNStruct *)context)->incGlitchTerms < 3){
 				for(int j=0; j < ((MNStruct *)context)->incGlitchTerms; j++){
-					getdistparamnames << getdistlabel;
-					getdistparamnames << " ";
-					getdistparamnames <<  "GlitchF"<<j<<" ";
-					getdistparamnames <<  i+1;
-					getdistparamnames << "\n";
-					getdistlabel++;
+					getdistparamnames <<  "GlitchF"<< i+1 << " \\text{GlitchF" << i+1 <<"}\n";
 
 					if (((MNStruct *)context)->rank==0) printf("Prior for Glitch F%i: %i %g %g \n",j, i,Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 					paramsfitted++;
 				}
 			}
 			else{
-					getdistparamnames << getdistlabel;
-					getdistparamnames << " ";
-					getdistparamnames <<  "GlitchF0 ";
-					getdistparamnames <<  i+1;
-					getdistparamnames << "\n";
-					getdistlabel++;
+					getdistparamnames <<  "GlitchF0"<< i+1 << " \\text{GlitchF0" << i+1 <<"}\n";
 
 					if (((MNStruct *)context)->rank==0) printf("Prior for Glitch F0: %i %g %g \n", i,Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 					paramsfitted++;
 
-					getdistparamnames << getdistlabel;
-					getdistparamnames << " ";
-					getdistparamnames <<  "GlitchDA ";
-					getdistparamnames <<  i+1;
-					getdistparamnames << "\n";
-					getdistlabel++;
+					getdistparamnames <<  "GlitchDA"<< i+1 << " \\text{GlitchDA" << i+1 <<"}\n";
 
 					if (((MNStruct *)context)->rank==0) printf("Prior for Glitch Decay Amp: %i %g %g \n", i,Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 					paramsfitted++;
 
-					getdistparamnames << getdistlabel;
-					getdistparamnames << " ";
-					getdistparamnames <<  "GlitchDT ";
-					getdistparamnames <<  i+1;
-					getdistparamnames << "\n";
-					getdistlabel++;
+					getdistparamnames <<  "GlitchDT"<< i+1 << " \\text{GlitchDT" << i+1 <<"}\n";
 
 					if (((MNStruct *)context)->rank==0) printf("Prior for Glitch Decay Timescale: %i %g %g \n", i,Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 					paramsfitted++;
@@ -584,13 +533,7 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 			int EFACnum=1;
 			for(int i =0;i<incEFAC;i++){
 			  if (((MNStruct *)context)->rank==0) printf("Prior on EPol %i EFAC %i : %.5g -> %.5g\n",n, EFACnum, Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
-			  getdistparamnames << getdistlabel;
-			  getdistparamnames << " ";
-			  getdistparamnames <<  "EFAC";
-			  getdistparamnames << i+1;
-			  getdistparamnames << "\n";
-			  getdistlabel++;
-			  
+			  getdistparamnames <<  "EFAC"<< i+1 << " \\text{EFAC" << i+1 <<"}\n";
 			  paramsfitted++;
 			  EFACnum++;
 			}
@@ -601,13 +544,7 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 		int EQUADnum=1;	
 		for(int i =0;i<incEQUAD;i++){
 		  if (((MNStruct *)context)->rank==0) printf("Prior on EQUAD %i: %.5g -> %.5g\n",EQUADnum,Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
-		  getdistparamnames << getdistlabel;
-		  getdistparamnames << " ";
-		  getdistparamnames <<  "EQUAD";
-		  getdistparamnames << i+1;
-		  getdistparamnames << "\n";
-		  getdistlabel++;
-		  
+		  getdistparamnames <<  "EQUAD"<< i+1 << " \\text{EQUAD" << i+1 <<"}\n";
 		  paramsfitted++;
 		  EQUADnum++;
 		}
@@ -617,13 +554,7 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 		int SQUADnum=1;	
 		for(int i =0;i<incShannonJitter;i++){
 		  if (((MNStruct *)context)->rank==0) printf("Prior on SQUAD %i: %.5g -> %.5g\n",SQUADnum,Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
-		  getdistparamnames << getdistlabel;
-		  getdistparamnames << " ";
-		  getdistparamnames <<  "SQUAD";
-		  getdistparamnames << i+1;
-		  getdistparamnames << "\n";
-		  getdistlabel++;
-		  
+		  getdistparamnames <<  "SQUAD"<< i+1 << " \\text{SQUAD" << i+1 <<"}\n";
 		  paramsfitted++;	
 		  SQUADnum++;
 		}
@@ -633,13 +564,7 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 		int HF=1;	
 		for(int i =0;i<((MNStruct *)context)->incHighFreqStoc;i++){
 		  if (((MNStruct *)context)->rank==0) printf("Prior on High Frequency Profile Stochasticity %i: %.5g -> %.5g\n",HF,Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
-		  getdistparamnames << getdistlabel;
-		  getdistparamnames << " ";
-		  getdistparamnames <<  "HF";
-		  getdistparamnames << i+1;
-		  getdistparamnames << "\n";
-		  getdistlabel++;
-		  
+		  getdistparamnames <<  "HF"<< i+1 << " \\text{HF" << i+1 <<"}\n";
 		  paramsfitted++;	
 		  HF++;
 		}
@@ -647,83 +572,45 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 
 	if(((MNStruct *)context)->FitSolarWind==1){
 	  if (((MNStruct *)context)->rank==0) printf("Prior on Solar Wind %.5g -> %.5g\n", Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
-	  getdistparamnames << getdistlabel;
-	  getdistparamnames << " ";
-	  getdistparamnames <<  "SW";
-	  getdistparamnames << "\n";
-	  getdistlabel++;
-	  
+	  getdistparamnames <<  "SW \\text{SW}\n";
 	  paramsfitted++;
 	}	
 
-
         if(((MNStruct *)context)->FitWhiteSolarWind==1){
 	  if (((MNStruct *)context)->rank==0) printf("Prior on White Solar Wind %.5g -> %.5g\n", Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
-	  getdistparamnames << getdistlabel;
-	  getdistparamnames << " ";
-	  getdistparamnames <<  "WSW";
-	  getdistparamnames << "\n";
-	  getdistlabel++;
-	  
+	  getdistparamnames <<  "WSW \\text{WSW}\n";
 	  paramsfitted++;
         }
-
 
 	if(((MNStruct *)context)->incNGJitter>0){
 	  int ECORRnum=1;	
 	  for(int i =0;i<((MNStruct *)context)->incNGJitter;i++){
 	    if (((MNStruct *)context)->rank==0) printf("Prior on ECORR %i: %.5g -> %.5g\n",ECORRnum,Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
-	    
-	    getdistparamnames << getdistlabel;
-	    getdistparamnames << " ";
-	    getdistparamnames <<  "ECORR";
-	    getdistparamnames << i+1;
-	    getdistparamnames << "\n";
-	    getdistlabel++;
-	    
+	    getdistparamnames <<  "ECORR"<< i+1 << " \\text{ECORR" << i+1 <<"}\n";
 	    paramsfitted++;	
 	    ECORRnum++;
 	  }
 	}
 
-
 	if(((MNStruct *)context)->incNGSJitter>0){
 	  int SECORRnum=1;	
 	  for(int i =0;i<((MNStruct *)context)->incNGSJitter;i++){
 	    if (((MNStruct *)context)->rank==0) printf("Prior on SECORR %i: %.5g -> %.5g\n",SECORRnum,Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
-	    getdistparamnames << getdistlabel;
-	    getdistparamnames << " ";
-	    getdistparamnames <<  "SECORR";
-	    getdistparamnames << i+1;
-	    getdistparamnames << "\n";
-	    getdistlabel++;
-	    
+	    getdistparamnames <<  "SECORR"<< i+1 << " \\text{SECORR" << i+1 <<"}\n";
 	    paramsfitted++;	
 	    SECORRnum++;
 	  }
 	}
 
-
-
 	if(((MNStruct *)context)->incDMEQUAD == 1){
 	  if (((MNStruct *)context)->rank==0) printf("Prior on DMEQUAD: %.5g -> %.5g\n",Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
-	  getdistparamnames << getdistlabel;
-	  getdistparamnames << " ";
-	  getdistparamnames <<  "DMEQ";
-	  getdistparamnames << "\n";
-	  getdistlabel++;
-	  
+	  getdistparamnames <<  "DMEQ \\text{DMEQ}\n";
 	  paramsfitted++;	
 	}
 
 	if(((MNStruct *)context)->incWidthJitter == 1){
 	  if (((MNStruct *)context)->rank==0) printf("Prior on WidthJitter: %.5g -> %.5g\n",Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
-	  getdistparamnames << getdistlabel;
-	  getdistparamnames << " ";
-	  getdistparamnames <<  "WJ";
-	  getdistparamnames << "\n";
-	  getdistlabel++;
-	  
+	  getdistparamnames <<  "WJ \\text{WJ}\n";
 	  paramsfitted++;	
 	}
 
@@ -745,21 +632,13 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 		  if (((MNStruct *)context)->rank==0) printf("Prior on DM Event %i Quadratic Term %g -> %g \n", i+1,Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 		  paramsfitted++;	
 
-		  getdistparamnames << getdistlabel <<  " DM Event"<<i+1<< "Start"<< "\n";
-		  getdistlabel++;
-		  getdistparamnames << getdistlabel <<  " DM Event"<<i+1<< "Length"<< "\n";
-		  getdistlabel++;
-		  getdistparamnames << getdistlabel <<  " DM Event"<<i+1<< "LogAmp"<< "\n";
-		  getdistlabel++;
-		  getdistparamnames << getdistlabel <<  " DM Event"<<i+1<< "Index"<< "\n";
-		  getdistlabel++;
-		  getdistparamnames << getdistlabel <<  " DM Event"<<i+1<< "Offset"<< "\n";
-		  getdistlabel++;
-		  getdistparamnames << getdistlabel <<  " DM Event"<<i+1<< "Linear"<< "\n";
-		  getdistlabel++;
-		  getdistparamnames << getdistlabel <<  " DM Event"<<i+1<< "Quad"<< "\n";
-		  getdistlabel++;
-
+		  getdistparamnames <<  "DMEventStart"<< i+1 << " \\text{DMEventStart" << i+1 <<"}\n";
+		  getdistparamnames <<  "DMEventLength"<< i+1 << " \\text{DMEventLength" << i+1 <<"}\n";
+		  getdistparamnames <<  "DMEventLogAmp"<< i+1 << " \\text{DMEventLogAmp" << i+1 <<"}\n";
+		  getdistparamnames <<  "DMEventIndex"<< i+1 << " \\text{DMEventIndex" << i+1 <<"}\n";
+		  getdistparamnames <<  "DMEventOffset"<< i+1 << " \\text{DMEventOffset" << i+1 <<"}\n";
+		  getdistparamnames <<  "DMEventLinear"<< i+1 << " \\text{DMEventLinear" << i+1 <<"}\n";
+		  getdistparamnames <<  "DMEventQuad"<< i+1 << " \\text{DMEventQuad" << i+1 <<"}\n";
 		}
 	}
 
@@ -767,8 +646,7 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 	if(((MNStruct *)context)->FitLowFreqCutoff > 0){
 	  if (((MNStruct *)context)->rank==0) printf("Prior on Red LF Cutoff %g -> %g \n", Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 	  paramsfitted++;
-	  getdistparamnames << getdistlabel <<  "LFC\n";
-	  getdistlabel++;
+	  getdistparamnames <<  "LFC \\text{LFC}\n";
 	}
 			
 	if(incRED==1 || incRED==3){
@@ -777,44 +655,22 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 	  if (((MNStruct *)context)->rank==0) printf("Prior on Red Noise Slope : %.5g -> %.5g\n",Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 	  paramsfitted++;
 	  
-	  getdistparamnames << getdistlabel;
-	  getdistparamnames << " ";
-	  getdistparamnames <<  "RedAmp";
-	  getdistparamnames << "\n";
-	  getdistlabel++;	
-	  
-	  getdistparamnames << getdistlabel;
-	  getdistparamnames << " ";
-	  getdistparamnames <<  "RedSlope";
-	  getdistparamnames << "\n";
-	  getdistlabel++;
+	  getdistparamnames <<  "RedAmp \\text{RedAmp}\n";
+	  getdistparamnames <<  "RedSlope \\text{RedSlope}\n";
 	  
 	  if(varyRedCoeff==1){
 	    if (((MNStruct *)context)->rank==0) printf("Varying RedCoeffs : %.5g -> %.5g\n",Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 	    paramsfitted++;	
-	    getdistparamnames << getdistlabel;
-	    getdistparamnames << " ";
-	    getdistparamnames <<  "RedPLCoeff";
-	    getdistparamnames << "\n";
-	    getdistlabel++;
+	    getdistparamnames <<  "RedPLCoeff \\text{RedPLCoeff}\n";
 	    paramsfitted++;	
-	    getdistparamnames << getdistlabel;
-	    getdistparamnames << " ";
-	    getdistparamnames <<  "RedPLCoeffAmp";
-	    getdistparamnames << "\n";
-	    getdistlabel++;	
+	    getdistparamnames <<  "RedPLCoeffAmp \\text{RedPLCoeffAmp}\n";
 	  }
 	}
 	else if(incRED==2){
 	  int Coeffnum=1;
 	  for(int i =0;i<numRedCoeff;i++){
 	    if (((MNStruct *)context)->rank==0) printf("Prior on Red Noise Coefficient %i Log Amplitude : %.5g -> %.5g\n",Coeffnum,Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
-	    getdistparamnames << getdistlabel;
-	    getdistparamnames << " ";
-	    getdistparamnames <<  "RedC";
-	    getdistparamnames <<  i+1;
-	    getdistparamnames << "\n";
-	    getdistlabel++;
+	    getdistparamnames <<  "RedC"<< i+1 << " \\text{RedC" << i+1 <<"}\n";
 	    paramsfitted++;	
 	  }
 	}
@@ -828,64 +684,27 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 	  if (((MNStruct *)context)->rank==0) printf("Prior on Red Noise Corner Freq : %.5g -> %.5g\n",Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 	  paramsfitted++;
 
-	  getdistparamnames << getdistlabel;
-	  getdistparamnames << " ";
-	  getdistparamnames <<  "RedAmp";
-	  getdistparamnames << "\n";
-	  getdistlabel++;
-	  
-	  getdistparamnames << getdistlabel;
-	  getdistparamnames << " ";
-	  getdistparamnames <<  "RedSlope";
-	  getdistparamnames << "\n";
-	  getdistlabel++;
-	  
-	  getdistparamnames << getdistlabel;
-	  getdistparamnames << " ";
-	  getdistparamnames <<  "RedCorner";
-	  getdistparamnames << "\n";
-	  getdistlabel++; 
+	  getdistparamnames <<  "RedAmp \\text{RedAmp}\n";
+	  getdistparamnames <<  "RedSlope \\text{RedSlope}\n";
+	  getdistparamnames <<  "RedCorner \\text{RedCorner}\n";	  
 	  
 	  if(varyRedCoeff==1){
 	    if (((MNStruct *)context)->rank==0) printf("Varying RedCoeffs : %.5g -> %.5g\n",Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 	    paramsfitted++;
-	    getdistparamnames << getdistlabel;
-	    getdistparamnames << " ";
-	    getdistparamnames <<  "RedPLCoeff";
-	    getdistparamnames << "\n";
-	    getdistlabel++;
-	    
+	    getdistparamnames <<  "RedPLCoeff \\text{RedPLCoeff}\n";
 	    paramsfitted++;
-	    getdistparamnames << getdistlabel;
-	    getdistparamnames << " ";
-	    getdistparamnames <<  "RedPLCoeffAmp";
-	    getdistparamnames << "\n";
-	    getdistlabel++;
+	    getdistparamnames <<  "RedPLCoeffAmp \\text{RedPLCoeffAmp}\n";
 	  }
 	}
 	else if(incRED==5){
 	  for(int i =0;i < 2*numRedCoeff;i++){
 	    if (((MNStruct *)context)->rank==0) printf("Prior on fourier coefficients: %i %g %g \n",i, Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
-	    getdistparamnames << getdistlabel;
-	    getdistparamnames << " ";
-	    getdistparamnames <<  "FourierC";
-	    getdistparamnames <<  i+1;
-	    getdistparamnames << "\n";
-	    getdistlabel++;
+	    getdistparamnames <<  "FourierC"<< i+1 << " \\text{FourierC" << i+1 <<"}\n";
 	    paramsfitted++;	
 	  }
 	  
-	  getdistparamnames << getdistlabel;
-	  getdistparamnames << " ";
-	  getdistparamnames <<  "RedAmp";
-	  getdistparamnames << "\n";
-	  getdistlabel++;	
-	  
-	  getdistparamnames << getdistlabel;
-	  getdistparamnames << " ";
-	  getdistparamnames <<  "RedSlope";
-	  getdistparamnames << "\n";
-	  getdistlabel++;
+	  getdistparamnames <<  "RedAmp \\text{RedAmp}\n";
+	  getdistparamnames <<  "RedSlope \\text{RedSlope}\n";
 	  
 	  if (((MNStruct *)context)->rank==0) printf("Prior on Red Noise Log Amplitude : %.5g -> %.5g\n",Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 	  paramsfitted++;		
@@ -895,20 +714,8 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 
         if(numFloatRed>0){
 	  for(int i =0; i < numFloatRed; i++){
-	    getdistparamnames << getdistlabel;
-	    getdistparamnames << " ";
-	    getdistparamnames <<  "RFF ";
-	    getdistparamnames <<  i+1;
-	    getdistparamnames << "\n";
-	    getdistlabel++;
-	    
-	    getdistparamnames << getdistlabel;
-	    getdistparamnames << " ";
-	    getdistparamnames <<  "RFA ";
-	    getdistparamnames <<  i+1;
-	    getdistparamnames << "\n";
-	    getdistlabel++;
-	    
+	    getdistparamnames <<  "RFF"<< i+1 << " \\text{RFF" << i+1 <<"}\n";
+	    getdistparamnames <<  "RFA"<< i+1 << " \\text{RFA" << i+1 <<"}\n";
 	    if (((MNStruct *)context)->rank==0) printf("Prior on Floating Red Noise Frequency %i : %.5g -> %.5g\n",i, Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 	    paramsfitted++;		
 	    if (((MNStruct *)context)->rank==0) printf("Prior on Floating Red Noise Log Amplitude %i : %.5g -> %.5g\n",i, Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
@@ -917,23 +724,15 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
         }
 
 	if(((MNStruct *)context)->incGWB == 1){
-	  getdistparamnames << getdistlabel;
-	  getdistparamnames << " ";
-	  getdistparamnames <<  "GWBAmp ";
-	  getdistparamnames << "\n";
-	  getdistlabel++;
-	  
+	  getdistparamnames <<  "GWBAmp \\text{GWBAmp}\n";
 	  if (((MNStruct *)context)->rank==0) printf("Prior on Log GWB Amplitude : %.5g -> %.5g\n",Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 	  paramsfitted++;
 	}
 
 	if(((MNStruct *)context)->incRedShapeEvent >0){
 	  for(int i =0; i < ((MNStruct *)context)->incRedShapeEvent; i++){
-	    getdistparamnames << getdistlabel << " RedShape"<<i+1<<"Pos\n";
-	    getdistlabel++;	
-	    getdistparamnames << getdistlabel << " RedShape"<<i+1<<"Width\n";
-	    getdistlabel++;	
-	    
+	    getdistparamnames <<  "RedShapePos"<< i+1 << " \\text{RedShapePos" << i+1 <<"}\n";
+	    getdistparamnames <<  "RedShapeWidth"<< i+1 << " \\text{RedShapeWidth" << i+1 <<"}\n";
 	    if (((MNStruct *)context)->rank==0) printf("Prior on Red Shape Event %i Start : %.5g -> %.5g\n",i+1,Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 	    paramsfitted++;	
 	    if (((MNStruct *)context)->rank==0) printf("Prior on Red Shape Event %i Width : %.5g -> %.5g\n",i+1,Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
@@ -941,8 +740,7 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 	    
 	    if(((MNStruct *)context)->MarginRedShapeCoeff == 0){
 	      for(int c =0; c< ((MNStruct *)context)->numRedShapeCoeff; c++){
-		getdistparamnames << getdistlabel << " RedShape"<<i+1<<"C"<<c+1<<"\n";
-		getdistlabel++;	
+		getdistparamnames <<  "RedShapeC"<< i+1 << " \\text{RedShapeC" << i+1 <<"}\n";
 		if (((MNStruct *)context)->rank==0) printf("Prior on Red Shape Event %i Coeff %i : %.5g -> %.5g\n",i+1,c+1,Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 		paramsfitted++;	
 	      }
@@ -951,23 +749,9 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 	}
 
         if(incsinusoid==1){
-	 	getdistparamnames << getdistlabel;
-		getdistparamnames << " ";
-		getdistparamnames <<  "sineAmp ";
-		getdistparamnames << "\n";
-		getdistlabel++;
-	 	getdistparamnames << getdistlabel;
-		getdistparamnames << " ";
-		getdistparamnames <<  "sinePhase ";
-		getdistparamnames << "\n";
-		getdistlabel++;
-	 	getdistparamnames << getdistlabel;
-		getdistparamnames << " ";
-		getdistparamnames <<  "sineFreq ";
-		getdistparamnames << "\n";
-		getdistlabel++;
-
-
+		getdistparamnames <<  "sineAmp \\text{sineAmp}\n";
+		getdistparamnames <<  "sinePhase \\text{sinePhase}\n";
+		getdistparamnames <<  "sineFreq \\text{sineFreq}\n";
 		if (((MNStruct *)context)->rank==0) printf("Prior on Sine Log Amplitude : %.5g -> %.5g\n", Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 		paramsfitted++;		
 		if (((MNStruct *)context)->rank==0) printf("Prior on Sine phase : %.5g -> %.5g\n", Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
@@ -977,18 +761,8 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
         }
 			
 	if(incDM==1 || incDM==3){
-		getdistparamnames << getdistlabel;
-		getdistparamnames << " ";
-		getdistparamnames <<  "DMAmp";
-		getdistparamnames << "\n";
-		getdistlabel++;	
-		
-		getdistparamnames << getdistlabel;
-		getdistparamnames << " ";
-		getdistparamnames <<  "DMSlope";
-		getdistparamnames << "\n";
-		getdistlabel++;
-		
+		getdistparamnames <<  "DMAmp \\text{DMAmp}\n";
+		getdistparamnames <<  "DMSlope \\text{DMSlope}\n";
 		if (((MNStruct *)context)->rank==0) printf("Prior on DM Log Amplitude : %.5g -> %.5g\n",Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 		paramsfitted++;		
 		if (((MNStruct *)context)->rank==0) printf("Prior on DM Slope : %.5g -> %.5g\n",Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
@@ -997,30 +771,16 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 		if(varyDMCoeff==1){
 		  if (((MNStruct *)context)->rank==0) printf("Varying DMCoeffs : %.5g -> %.5g\n",Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 		  paramsfitted++;	
-		  getdistparamnames << getdistlabel;
-		  getdistparamnames << " ";
-		  getdistparamnames <<  "DMPLCoeff";
-		  getdistparamnames << "\n";
-		  getdistlabel++;
-		  
+		  getdistparamnames <<  "DMPLCoeff \\text{DMPLCoeff}\n";
 		  paramsfitted++;	
-		  getdistparamnames << getdistlabel;
-		  getdistparamnames << " ";
-		  getdistparamnames <<  "DMPLCoeffAmp";
-		  getdistparamnames << "\n";
-		  getdistlabel++;	
+		  getdistparamnames <<  "DMPLCoeffAmp \\text{DMPLCoeffAmp}\n";
 		}
 	}
 	else if(incDM==2){
 		int Coeffnum=1;
 		for(int i =0;i<numDMCoeff;i++){
 		  if (((MNStruct *)context)->rank==0) printf("Prior on DM Coefficient %i Log Amplitude : %.5g -> %.5g\n",Coeffnum,Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
-		  getdistparamnames << getdistlabel;
-		  getdistparamnames << " ";
-		  getdistparamnames <<  "DMC";
-		  getdistparamnames <<  i+1;
-		  getdistparamnames << "\n";
-		  getdistlabel++;
+		  getdistparamnames <<  "DMC"<< i+1 << " \\text{DMC" << i+1 <<"}\n";
 		  paramsfitted++;	
 		}
 	}
@@ -1028,26 +788,11 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
         else if(incDM==5){
                 for(int i =0;i < 2*numDMCoeff;i++){
 		  if (((MNStruct *)context)->rank==0) printf("Prior on DM fourier coefficients: %i %g %g \n",i, Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
-		  getdistparamnames << getdistlabel;
-		  getdistparamnames << " ";
-		  getdistparamnames <<  "DMFourierC";
-		  getdistparamnames <<  i+1;
-		  getdistparamnames << "\n";
-		  getdistlabel++;
+		  getdistparamnames <<  "DMFourierC"<< i+1 << " \\text{DMFourierC" << i+1 <<"}\n";
 		  paramsfitted++;
                 }
-		
-		getdistparamnames << getdistlabel;
-		getdistparamnames << " ";
-		getdistparamnames <<  "DMAmp";
-		getdistparamnames << "\n";
-		getdistlabel++;
-		
-		getdistparamnames << getdistlabel;
-		getdistparamnames << " ";
-		getdistparamnames <<  "DMSlope";
-		getdistparamnames << "\n";
-		getdistlabel++;
+		getdistparamnames <<  "DMAmp \\text{DMAmp}\n";
+		getdistparamnames <<  "DMPSlope \\text{DMSlope}\n";
 		
 		if (((MNStruct *)context)->rank==0) printf("Prior on DM Variations Log Amplitude : %.5g -> %.5g\n",Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 		paramsfitted++;
@@ -1058,42 +803,21 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
         else if(incDM==6){
                 for(int i =0;i < 2*numDMCoeff;i++){
 		  if (((MNStruct *)context)->rank==0) printf("Prior on DM fourier coefficients: %i %g %g \n",i, Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
-		  getdistparamnames << getdistlabel;
-		  getdistparamnames << " ";
-		  getdistparamnames <<  "DMFourierC";
-		  getdistparamnames <<  i+1;
-		  getdistparamnames << "\n";
-		  getdistlabel++;
+		  getdistparamnames <<  "DMFourierC"<< i+1 << " \\text{DMFourierC" << i+1 <<"}\n";
 		  paramsfitted++;
                 }
 
                 for(int i =0;i < numDMCoeff;i++){
 		  if (((MNStruct *)context)->rank==0) printf("Prior on DM PS coefficients: %i %g %g \n",i, Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
-		  getdistparamnames << getdistlabel;
-		  getdistparamnames << " ";
-		  getdistparamnames <<  "DMFourierPC";
-		  getdistparamnames <<  i+1;
-		  getdistparamnames << "\n";
-		  getdistlabel++;
+		  getdistparamnames <<  "DMFourierPC"<< i+1 << " \\text{DMFourierPC" << i+1 <<"}\n";
 		  paramsfitted++;
                 }
         }
 
         if(numFloatDM>0){
         	for(int i =0; i < numFloatDM; i++){
-		 	getdistparamnames << getdistlabel;
-			getdistparamnames << " ";
-			getdistparamnames <<  "DMFF ";
-			getdistparamnames <<  i+1;
-			getdistparamnames << "\n";
-			getdistlabel++;
-
-		 	getdistparamnames << getdistlabel;
-			getdistparamnames << " ";
-			getdistparamnames <<  "DMFA ";
-			getdistparamnames <<  i+1;
-			getdistparamnames << "\n";
-			getdistlabel++;
+			getdistparamnames <<  "DMFF"<< i+1 << " \\text{DMFF" << i+1 <<"}\n";
+			getdistparamnames <<  "DMFA"<< i+1 << " \\text{DMFA" << i+1 <<"}\n";
 
 			if (((MNStruct *)context)->rank==0) printf("Prior on Floating DM Frequency %i : %.5g -> %.5g\n",i, Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 			paramsfitted++;		
@@ -1104,10 +828,8 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 
 	if(((MNStruct *)context)->incDMShapeEvent >0){
 		for(int i =0; i < ((MNStruct *)context)->incDMShapeEvent; i++){
-			getdistparamnames << getdistlabel << " DMShape"<<i+1<<"Pos\n";
-			getdistlabel++;	
-			getdistparamnames << getdistlabel << " DMShape"<<i+1<<"Width\n";
-			getdistlabel++;	
+			getdistparamnames <<  "DMShapePos"<< i+1 << " \\text{DMShapePos" << i+1 <<"}\n";
+			getdistparamnames <<  "DMShapeWidth"<< i+1 << " \\text{DMShapeWidth" << i+1 <<"}\n";
 
 			if (((MNStruct *)context)->rank==0) printf("Prior on DM Shape Event %i Start : %.5g -> %.5g\n",i+1,Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 			paramsfitted++;	
@@ -1116,8 +838,7 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 
 
 			for(int c =0; c< ((MNStruct *)context)->numDMShapeCoeff; c++){
-				getdistparamnames << getdistlabel << " DMShape"<<i+1<<"C"<<c+1<<"\n";
-				getdistlabel++;	
+				getdistparamnames <<  "DMShapeC"<< i+1 << " \\text{DMShapeC" << i+1 <<"}\n";
 				if (((MNStruct *)context)->rank==0) printf("Prior on DM Shape Event %i Coeff %i : %.5g -> %.5g\n",i+1,c+1,Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 				paramsfitted++;	
 			}
@@ -1126,13 +847,10 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 
 	if(((MNStruct *)context)->incDMScatterShapeEvent >0){
 		for(int i =0; i < ((MNStruct *)context)->incDMScatterShapeEvent; i++){
-			getdistparamnames << getdistlabel << " DMScatterShape"<<i+1<<"Pos\n";
-			getdistlabel++;	
-			getdistparamnames << getdistlabel << " DMScatterShape"<<i+1<<"Width\n";
-			getdistlabel++;	
-			getdistparamnames << getdistlabel << " DMScatterShape"<<i+1<<"Freq\n";
-			getdistlabel++;	
-
+			getdistparamnames <<  "DMScatterShapePos"<< i+1 << " \\text{DMScatterShapePos" << i+1 <<"}\n";
+			getdistparamnames <<  "DMScatterShapeWidth"<< i+1 << " \\text{DMScatterShapeWidth" << i+1 <<"}\n";
+			getdistparamnames <<  "DMScatterShapeFreq"<< i+1 << " \\text{DMScatterShapeFreq" << i+1 <<"}\n";
+			
 			if (((MNStruct *)context)->rank==0) printf("Prior on DM Scatter Shape Event %i Start : %.5g -> %.5g\n",i+1,Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 			paramsfitted++;	
 			if (((MNStruct *)context)->rank==0) printf("Prior on DM Scatter Shape Event %i Width : %.5g -> %.5g\n",i+1,Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
@@ -1141,8 +859,7 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 			paramsfitted++;	
 
 			for(int c =0; c< ((MNStruct *)context)->numDMScatterShapeCoeff; c++){
-				getdistparamnames << getdistlabel << " DMScatterShape"<<i+1<<"C"<<c+1<<"\n";
-				getdistlabel++;	
+				getdistparamnames <<  "DMScatterShapeC"<< i+1 << " \\text{DMScatterShapeC" << i+1 <<"}\n";
 				if (((MNStruct *)context)->rank==0) printf("Prior on DM Scatter Shape Event %i Coeff %i : %.5g -> %.5g\n",i+1,c+1,Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 				paramsfitted++;	
 			}
@@ -1152,46 +869,30 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 	if(((MNStruct *)context)->incBandNoise > 0 ){
 
 		for(int b = 0; b < ((MNStruct *)context)->incBandNoise; b++){
-
-			getdistparamnames << getdistlabel << " BNAmp\n";
-			getdistlabel++;	
-	
-			getdistparamnames << getdistlabel << " BNSpec\n";
-			getdistlabel++;
-			
+			getdistparamnames <<  "BNAmp \\text{BNAmp}\n";
+			getdistparamnames <<  "BNSpec \\text{BNSpec}\n";
 			if (((MNStruct *)context)->rank==0) printf("Prior on %i - %i Noise Log Amplitude : %.5g -> %.5g\n", ((MNStruct *)context)->FitForBand[b][0], ((MNStruct *)context)->FitForBand[b][1], Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 			paramsfitted++;		
 			if (((MNStruct *)context)->rank==0) printf("Prior on %i - %i Noise Slope : %.5g -> %.5g\n", ((MNStruct *)context)->FitForBand[b][0], ((MNStruct *)context)->FitForBand[b][1], Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 			paramsfitted++;
 		}
-
 	}
-
-
-
 
 	if(((MNStruct *)context)->incGroupNoise > 0 ){
 
 		for(int i = 0 ; i <((MNStruct *)context)->incGroupNoise; i++){
 
 			if(((MNStruct *)context)->FitForGroup[i][0] == -1){
-				getdistparamnames << getdistlabel << " Group\n";
-				getdistlabel++;	
+				getdistparamnames <<  "Group \\text{Group}\n";
 			}
                         if(((MNStruct *)context)->FitForGroup[i][1] == 1){
-                                getdistparamnames << getdistlabel << " GroupStart\n";
-                                getdistlabel++; 
-                                getdistparamnames << getdistlabel << " GroupLength\n";
-                                getdistlabel++;
+				getdistparamnames <<  "GroupStart \\text{GroupStart}\n";
+				getdistparamnames <<  "GroupLength \\text{GroupLength}\n";
 
                         }
 
-			getdistparamnames << getdistlabel << " GroupAmp\n";
-			getdistlabel++;	
-	
-			getdistparamnames << getdistlabel << " GroupSpec\n";
-			getdistlabel++;
-	
+			getdistparamnames <<  "GroupAmp \\text{GroupAmp}\n";
+			getdistparamnames <<  "GroupSpec \\text{GroupSpec}\n";
 
 			if(((MNStruct *)context)->FitForGroup[i][0] == -1){
 			  if (((MNStruct *)context)->rank==0) printf("Prior on Group Noise Group : %.5g -> %.5g\n",Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
@@ -1213,12 +914,7 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 			
 	if(fitDMModel==1){
 		for(int i=0;i<psr[0].dmoffsDMnum;i++){
-		  getdistparamnames << getdistlabel;
-		  getdistparamnames << " ";
-		  getdistparamnames <<  "DMModel";
-		  getdistparamnames <<  i+1;
-		  getdistparamnames << "\n";
-		  getdistlabel++;
+		  getdistparamnames <<  "DMModel"<< i+1 << " \\text{DMModel" << i+1 <<"}\n";
 		  if (((MNStruct *)context)->rank==0) printf("Prior for DMModel: %i %g %g \n",i,Dpriors[paramsfitted][0],Dpriors[paramsfitted][1]);
 		  paramsfitted++;	
 		}
@@ -1227,12 +923,7 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 	for(int c = 0; c < ((MNStruct *)context)->numProfComponents; c++){
 		for(int i =0; i<((MNStruct *)context)->numshapestoccoeff[c]; i++){
 		  if (((MNStruct *)context)->rank==0) printf("Prior on Profile Shape Stochasticitiy Coeff %i for comp %i Log Amplitude : %.5g -> %.5g\n",i, c, -10.0, 1.0);
-		  getdistparamnames << getdistlabel;
-		  getdistparamnames << " ";
-		  getdistparamnames <<  "PS";
-		  getdistparamnames <<  i+1;
-		  getdistparamnames << "\n";
-		  getdistlabel++;
+		  getdistparamnames <<  "PS"<< i+1 << " \\text{PS" << i+1 <<"}\n";
 		  paramsfitted++;
 		}
 	}
@@ -1240,31 +931,18 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 	for(int c = 0; c < ((MNStruct *)context)->numProfComponents; c++){
 		for(int i =0; i<((MNStruct *)context)->numProfileFitCoeff[c]; i++){
 		  if (((MNStruct *)context)->rank==0) printf("Prior on Profile Fit Coeff %i for comp %i: %.5g -> %.5g\n",i,-0.1, 0.1, c);
-		  getdistparamnames << getdistlabel;
-		  getdistparamnames << " ";
-		  getdistparamnames <<  "PF";
-		  getdistparamnames <<  i+1;
-		  getdistparamnames << "\n";
-		  getdistlabel++;
+		  getdistparamnames <<  "PF"<< i+1 << " \\text{PF" << i+1 <<"}\n";
 		  paramsfitted++;
 		}
 	}
 
 	if(((MNStruct *)context)->FitLinearProfileWidth == 1){
-	  getdistparamnames << getdistlabel;
-	  getdistparamnames << " ";
-	  getdistparamnames <<  "PW";
-	  getdistparamnames << "\n";
-	  getdistlabel++;
+	  getdistparamnames <<  "PW \\text{PW}\n";
 	  paramsfitted++;
 	}
 	
 	if(((MNStruct *)context)->FitEvoExponent == 1){
-	  getdistparamnames << getdistlabel;
-	  getdistparamnames << " ";
-	  getdistparamnames <<  "EvoExp";
-	  getdistparamnames << "\n";
-	  getdistlabel++;
+	  getdistparamnames <<  "EvoExp \\text{EvoExp}\n";
 	  paramsfitted++;
 	}
 
@@ -1273,23 +951,14 @@ void printPriors(pulsar *psr, long double **TempoPriors, double **Dpriors, int i
 			for(int j =0; j<((MNStruct *)context)->NProfileEvoPoly; j++){
 //				printf("Prior on Profile Evolution Coeff %i %i : %.5g -> %.5g\n",i,j, -0.1, 0.1);
 
-				getdistparamnames << getdistlabel;
-				getdistparamnames << " ";
-				getdistparamnames <<  "PE";
-				getdistparamnames <<  i+1;
-				getdistparamnames << "\n";
-				getdistlabel++;
+				getdistparamnames <<  "PE"<< i+1 << " \\text{PE" << i+1 <<"}\n";
 				paramsfitted++;
 			}
 		}
 	}	
 
 	if(((MNStruct *)context)->incProfileEvo == 2){
-			getdistparamnames << getdistlabel;
-			getdistparamnames << " ";
-			getdistparamnames <<  "EPW";
-			getdistparamnames << "\n";
-			getdistlabel++;
+			getdistparamnames <<  "EPW \\text{EPW}\n";
 			paramsfitted++;
 	}
 
