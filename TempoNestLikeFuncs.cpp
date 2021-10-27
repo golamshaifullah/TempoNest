@@ -64,7 +64,6 @@
 #include <mpack/mlapack_dd.h>
 #endif
 */
-#include <fftw3.h>
 
 using namespace std;
 
