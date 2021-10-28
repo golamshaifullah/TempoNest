@@ -46,7 +46,6 @@
 #include "TempoNest.h"
 #include "dgesvd.h"
 #include "qrdecomp.h"
-#include "cholesky.h"
 #include "T2toolkit.h"
 #include <fstream>
 #include <unistd.h>
