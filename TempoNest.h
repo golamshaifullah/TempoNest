@@ -114,7 +114,7 @@ typedef struct {
 	int incGlitchTerms;
 	int incBreakingIndex;
 	int FitLowFreqCutoff;
-	int uselongdouble;
+	int useNbitsAlgebra;
 	int incGroupNoise;
 	int numFitGroupNoiseCoeff;
 	int **FitForGroup;
@@ -453,7 +453,7 @@ void setupparams(char *ConfigFileName, int &useGPUS,
                 double &GlitchFitSig,
 		int &incBreakingIndex,
 		int &FitLowFreqCutoff,
-		int &uselongdouble,
+		int &useNbitsAlgebra,
 		int &incGroupNoise,
 		int &numGroupCoeff,
 		double *GroupNoiseAmpPrior,

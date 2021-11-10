@@ -2,6 +2,7 @@
 # SWIN_LIB_MLAPACK([ACTION-IF-FOUND [,ACTION-IF-NOT-FOUND]])
 #
 # This m4 macro checks availability of the high precision mlapack libraries.
+# MLAPACK is now known as MPLAPACK: https://github.com/nakatamaho/mplapack
 #
 # MLAPACK_CFLAGS - autoconfig variable with flags required for compiling
 # MLAPACK_LIBS   - autoconfig variable with flags required for linking
@@ -16,13 +17,15 @@
 #
 # This macro tries to link a test program in the following way
 #
-#    -L$(MLAPACK)/lib  -lmblas_qd -lmlapack_qd -lmblas_dd -lmlapack_dd  -I$(MLAPACK)/include
+# -L$MLAPACK/lib -lmpfr -lmpc -lmplapack_mpfr -lmpblas_mpfr -lmatgen_mpfr \
+#-I$MLAPACK/include/ -I$MLAPACK/include/mplapack
 #
 #
 # ----------------------------------------------------------
 AC_DEFUN([SWIN_LIB_MLAPACK],
 [
   AC_PROVIDE([SWIN_LIB_MLAPACK])
+
   AC_REQUIRE([AC_F77_LIBRARY_LDFLAGS])
   AC_REQUIRE([ACX_BLAS])
   AC_REQUIRE([ACX_LAPACK])
@@ -35,14 +38,12 @@ AC_DEFUN([SWIN_LIB_MLAPACK],
   MLAPACK_LIB=""
 
   if test x"$MLAPACK" != x; then
-    MLAPACK_LIBS="-L$MLAPACK/lib -lmblas_qd -lmlapack_qd -lmblas_dd -lmlapack_dd"
+    MLAPACK_LIBS="-L$MLAPACK/lib -lmpfr -lmpc -lmplapack_mpfr -lmpblas_mpfr -lmatgen_mpfr"
   fi
 
   if test x"$MLAPACK" != x; then
-    MLAPACK_CFLAGS="-I$MLAPACK/include"
+    MLAPACK_CFLAGS="-I$MLAPACK/include/ -I$MLAPACK/include/mplapack"
   fi
-
-  MLAPACK_LIBS="$MLAPACK_LIBS $MLAPACK_LIB"
 
   ac_save_CFLAGS="$CFLAGS"
   ac_save_LIBS="$LIBS"
@@ -55,8 +56,7 @@ AC_DEFUN([SWIN_LIB_MLAPACK],
   ac_save_LIBS="$LIBS"
   LIBS="$ac_save_LIBS $MLAPACK_LIBS"
   CXXFLAGS="$ac_save_CXXFLAGS $MLAPACK_CFLAGS"
-
-  AC_TRY_LINK([#include "mpack/mblas_dd.h"],[Mlsame_dd("", "");],
+  AC_TRY_LINK([#include "mpblas_mpfr.h"],[Mlsame_mpfr("", "");],
               have_mlapack=yes, have_mlapack=no)
 
 
