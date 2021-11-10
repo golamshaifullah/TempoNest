@@ -46,7 +46,6 @@
 #include "TempoNest.h"
 #include "dgesvd.h"
 #include "qrdecomp.h"
-#include "cholesky.h"
 #include "T2toolkit.h"
 #include <fstream>
 #include <unistd.h>
@@ -56,15 +55,10 @@
 #include <iterator>
 #include <cstring>
 
-/*
 #ifdef HAVE_MLAPACK
-#include <mpack/mblas_qd.h>
-#include <mpack/mlapack_qd.h>
-#include <mpack/mblas_dd.h>
-#include <mpack/mlapack_dd.h>
+#include <mpblas_mpfr.h>
+#include <mplapack_mpfr.h>
 #endif
-*/
-#include <fftw3.h>
 
 using namespace std;
 
@@ -105,8 +99,8 @@ void TNothpl(int n,double x,double *pl){
 
                 double c=2.0*(k-1.0);
 //		printf("%i %g\n", k, sqrt(double(k*1.0)));
-		y0=y0/sqrt(double(k*1.0));
-		y1=y1/sqrt(double(k*1.0));
+		y0=y0/std::sqrt(double(k*1.0));
+		y1=y1/std::sqrt(double(k*1.0));
                 double yn=(a*x+b)*y1-c*y0;
 		yn=yn;///sqrt(double(k));
                 pl[k]=yn;///sqrt(double(k));
@@ -139,8 +133,8 @@ void TNothplMC(int n,double x,double *pl, int cpos){
 
                 double c=2.0*(k-1.0);
 //		printf("%i %g\n", k, sqrt(double(k*1.0)));
-		y0=y0/sqrt(double(k*1.0));
-		y1=y1/sqrt(double(k*1.0));
+		y0=y0/std::sqrt(double(k*1.0));
+		y1=y1/std::sqrt(double(k*1.0));
                 double yn=(a*x+b)*y1-c*y0;
 		yn=yn;///sqrt(double(k));
                 pl[k+cpos]=yn;///sqrt(double(k));
@@ -497,7 +491,7 @@ double  NewLRedMarginLogLike(double Cube[], int ndim, double phi[], int nDerived
 
 			if(((MNStruct *)globalcontext)->TempoFitNums[p][0] == param_sini && ((MNStruct *)globalcontext)->usecosiprior == 1){
 					val = Cube[fitcount];
-					LDparams[p] = sqrt(1.0 - val*val);
+					LDparams[p] = std::sqrt(1.0 - val*val);
 			}
 
 			fitcount++;
@@ -1173,13 +1167,13 @@ double  NewLRedMarginLogLike(double Cube[], int ndim, double phi[], int nDerived
 
 				double *RedshapeNorm=new double[numRedShapeCoeff];
 				for(int c=0; c < numRedShapeCoeff; c++){
-					RedshapeNorm[c]=1.0/sqrt(sqrt(2.0*M_PI)*pow(2.0,c)*iter_factorial(c));
+				  RedshapeNorm[c]=1.0/std::sqrt(std::sqrt(2.0*M_PI)*pow(2.0,c)*iter_factorial(c));
 				}
 
 				for(int k=0;k<((MNStruct *)globalcontext)->pulse->nobs;k++){	
 					double time=(double)((MNStruct *)globalcontext)->pulse->obsn[k].bat;
 
-					double HVal=(time-EventPos)/(sqrt(2.0)*EventWidth);
+					double HVal=(time-EventPos)/(std::sqrt(2.0)*EventWidth);
 					TNothpl(numRedShapeCoeff,HVal,RedshapeVec);
 
 					for(int c=0; c < numRedShapeCoeff; c++){
@@ -1222,13 +1216,13 @@ double  NewLRedMarginLogLike(double Cube[], int ndim, double phi[], int nDerived
 
 				double *RedshapeNorm=new double[numRedShapeCoeff];
 				for(int c=0; c < numRedShapeCoeff; c++){
-					RedshapeNorm[c]=1.0/sqrt(sqrt(2.0*M_PI)*pow(2.0,c)*iter_factorial(c));
+				  RedshapeNorm[c]=1.0/std::sqrt(std::sqrt(2.0*M_PI)*pow(2.0,c)*iter_factorial(c));
 				}
 
 				for(int k=0;k<((MNStruct *)globalcontext)->pulse->nobs;k++){	
 					double time=(double)((MNStruct *)globalcontext)->pulse->obsn[k].bat;
 
-					double HVal=(time-EventPos)/(sqrt(2.0)*EventWidth);
+					double HVal=(time-EventPos)/(std::sqrt(2.0)*EventWidth);
 					TNothpl(numRedShapeCoeff,HVal,RedshapeVec);
 					double Redsignal=0;
 					for(int c=0; c < numRedShapeCoeff; c++){
@@ -1394,13 +1388,13 @@ double  NewLRedMarginLogLike(double Cube[], int ndim, double phi[], int nDerived
 
 			double *DMshapeNorm=new double[numDMShapeCoeff];
 			for(int c=0; c < numDMShapeCoeff; c++){
-				DMshapeNorm[c]=1.0/sqrt(sqrt(2.0*M_PI)*pow(2.0,c)*iter_factorial(c));
+			  DMshapeNorm[c]=1.0/std::sqrt(std::sqrt(2.0*M_PI)*pow(2.0,c)*iter_factorial(c));
 			}
 
 			for(int k=0;k<((MNStruct *)globalcontext)->pulse->nobs;k++){	
 				double time=(double)((MNStruct *)globalcontext)->pulse->obsn[k].bat;
 
-				double HVal=(time-EventPos)/(sqrt(2.0)*EventWidth);
+				double HVal=(time-EventPos)/(std::sqrt(2.0)*EventWidth);
 				TNothpl(numDMShapeCoeff,HVal,DMshapeVec);
 				double DMsignal=0;
 				for(int c=0; c < numDMShapeCoeff; c++){
@@ -1454,13 +1448,13 @@ double  NewLRedMarginLogLike(double Cube[], int ndim, double phi[], int nDerived
 
 			double *DMshapeNorm=new double[numDMShapeCoeff];
 			for(int c=0; c < numDMShapeCoeff; c++){
-				DMshapeNorm[c]=1.0/sqrt(sqrt(2.0*M_PI)*pow(2.0,c)*iter_factorial(c));
+			  DMshapeNorm[c]=1.0/std::sqrt(std::sqrt(2.0*M_PI)*pow(2.0,c)*iter_factorial(c));
 			}
 
 			for(int k=0;k<((MNStruct *)globalcontext)->pulse->nobs;k++){	
 				double time=(double)((MNStruct *)globalcontext)->pulse->obsn[k].bat;
 
-				double HVal=(time-EventPos)/(sqrt(2.0)*EventWidth);
+				double HVal=(time-EventPos)/(std::sqrt(2.0)*EventWidth);
 				TNothpl(numDMShapeCoeff,HVal,DMshapeVec);
 				double DMsignal=0;
 				for(int c=0; c < numDMShapeCoeff; c++){
@@ -1659,13 +1653,13 @@ double  NewLRedMarginLogLike(double Cube[], int ndim, double phi[], int nDerived
 				freqdet=freqdet+2*log(powercoeff[startpos+i]);
 			}
 
-			double sqrtDMKappa = sqrt(DMKappa);
+			double sqrtDMKappa = std::sqrt(DMKappa);
 			for(int i=0;i<FitGroupNoiseCoeff/2;i++){
 				for(int k=0;k<((MNStruct *)globalcontext)->pulse->nobs;k++){
 					if(((MNStruct *)globalcontext)->GroupNoiseFlags[k] == GrouptoFit && (double)((MNStruct *)globalcontext)->pulse->obsn[k].bat > GroupStartTime && (double)((MNStruct *)globalcontext)->pulse->obsn[k].bat < GroupStopTime){
 			//		if(((MNStruct *)globalcontext)->GroupNoiseFlags[k] == GrouptoFit){
 				       		double time=(double)((MNStruct *)globalcontext)->pulse->obsn[k].bat;
-						double Fscale = 1.0/(pow(sqrtDMKappa*((double)((MNStruct *)globalcontext)->pulse->obsn[k].freqSSB), GroupScale));
+						double Fscale = 1.0/(std::pow(sqrtDMKappa*((double)((MNStruct *)globalcontext)->pulse->obsn[k].freqSSB), GroupScale));
 						//printf("Scale: %i %i %g %g %g \n", g, k, GroupScale, Fscale);
 						TotalMatrix[k + (i+TimetoMargin+startpos)*((MNStruct *)globalcontext)->pulse->nobs]=cos(2*M_PI*freqs[startpos+i]*time)*Fscale;
 						TotalMatrix[k + (i+TimetoMargin+startpos+FitGroupNoiseCoeff/2)*((MNStruct *)globalcontext)->pulse->nobs]=sin(2*M_PI*freqs[startpos+i]*time)*Fscale;
@@ -1764,7 +1758,7 @@ double  NewLRedMarginLogLike(double Cube[], int ndim, double phi[], int nDerived
 
 		for(int i=0;i<((MNStruct *)globalcontext)->pulse->nobs;i++){
 			for(int j=0;j<totalsize;j++){
-				TotalMatrix[i + j*((MNStruct *)globalcontext)->pulse->nobs] *= sqrt(Noise[i]);
+			  TotalMatrix[i + j*((MNStruct *)globalcontext)->pulse->nobs] *= std::sqrt(Noise[i]);
 			}
 			Resvec[i] *= Noise[i];
 		}
@@ -1773,7 +1767,7 @@ double  NewLRedMarginLogLike(double Cube[], int ndim, double phi[], int nDerived
 
 		for(int i=0;i<((MNStruct *)globalcontext)->pulse->nobs;i++){
 			for(int j=0;j<totalsize;j++){
-				TotalMatrix[i + j*((MNStruct *)globalcontext)->pulse->nobs] /= sqrt(Noise[i]);
+			  TotalMatrix[i + j*((MNStruct *)globalcontext)->pulse->nobs] /= std::sqrt(Noise[i]);
 			}
 		}
 
@@ -2048,7 +2042,7 @@ double  TemplateProfLike(int &ndim, double *Cube, int &npars, double *DerivedPar
 
 				for(int k =0; k < numcoeff[i]; k++){
 					//if(k==0)printf("HP %i %i %g %g \n", i, j, Betatimes[j],Hermitepoly[j][cpos+k]*exp(-0.5*Betatimes[j]*Betatimes[j]));
-					double Bconst=(1.0/sqrt(beta))/sqrt(pow(2.0,k)*sqrt(M_PI));//*((MNStruct *)globalcontext)->Factorials[k]);
+				  double Bconst=(1.0/std::sqrt(beta))/std::sqrt(std::pow(2.0,k)*std::sqrt(M_PI));//*((MNStruct *)globalcontext)->Factorials[k]);
 					Hermitepoly[j][cpos+k]=Hermitepoly[j][cpos+k]*Bconst*exp(-0.5*Betatimes[j]*Betatimes[j]);
 
 				}
@@ -2364,7 +2358,7 @@ void  WriteMaxTemplateProf(std::string longname, int &ndim){
 
 				for(int k =0; k < numcoeff[i]; k++){
 					//if(k==0)printf("HP %i %i %g %g \n", i, j, Betatimes[j],Hermitepoly[j][cpos+k]*exp(-0.5*Betatimes[j]*Betatimes[j]));
-					double Bconst=(1.0/sqrt(beta))/sqrt(pow(2.0,k)*sqrt(M_PI));//*((MNStruct *)globalcontext)->Factorials[k]);
+				  double Bconst=(1.0/std::sqrt(beta))/std::sqrt(pow(2.0,k)*std::sqrt(M_PI));//*((MNStruct *)globalcontext)->Factorials[k]);
 					Hermitepoly[j][cpos+k]=Hermitepoly[j][cpos+k]*Bconst*exp(-0.5*Betatimes[j]*Betatimes[j]);
 
 				}
@@ -2446,7 +2440,7 @@ void  WriteMaxTemplateProf(std::string longname, int &ndim){
 
 			    double datadiff =  (double)((MNStruct *)globalcontext)->ProfileData[nTOA][j][1] - shapevec[j]-minFlux;
 			    Chisq += datadiff*datadiff*FakeRMS;
-				printf("Bin %i Data %.10g Template %.10g Noise %.10g \n", j, (double)((MNStruct *)globalcontext)->ProfileData[nTOA][j][1] , shapevec[j], 1.0/sqrt(FakeRMS));		
+			    printf("Bin %i Data %.10g Template %.10g Noise %.10g \n", j, (double)((MNStruct *)globalcontext)->ProfileData[nTOA][j][1] , shapevec[j], 1.0/std::sqrt(FakeRMS));		
 
 		    }
 

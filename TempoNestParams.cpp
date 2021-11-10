@@ -103,7 +103,7 @@ void setupparams(char *ConfigFileName, int &useGPUS,
 		double &GlitchFitSig,
 		int &incBreakingIndex,
 		int &FitLowFreqCutoff,
-		int &uselongdouble,
+		int &useNbitsAlgebra,
 		int &incGroupNoise,
 		int &numGroupCoeff,
 		double *GroupNoiseAmpPrior,
@@ -167,7 +167,7 @@ void setupparams(char *ConfigFileName, int &useGPUS,
 		
 	debug = 0;
 	useGPUS=0;
-	uselongdouble=0;
+	useNbitsAlgebra=0;
 
 	GPTA = 0;
 	numProfComponents = 0;
@@ -441,7 +441,7 @@ void setupparams(char *ConfigFileName, int &useGPUS,
          * Note: the timing model parameters are not done implemented yet
          */
 	parameters.readInto(useGPUS, "useGPUS", useGPUS);
-	parameters.readInto(uselongdouble, "uselongdouble", uselongdouble);
+	parameters.readInto(useNbitsAlgebra, "useNbitsAlgebra", useNbitsAlgebra);
 	parameters.readInto(GPTA, "GPTA", GPTA);
 	parameters.readInto(FixProfile, "FixProfile", FixProfile);
 	parameters.readInto(FitTemplate, "FitTemplate", FitTemplate);
