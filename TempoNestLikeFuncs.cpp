@@ -435,6 +435,27 @@ void LRedLikeMNWrap(double *Cube, int &ndim, int &npars, double &lnew, void *con
 
 }
 
+void printmat(int N, int M, mpreal * A, int LDA)
+{
+    mpreal mtmp;
+    printf("[ ");
+    for (int i = 0; i < N; i++) {
+    printf("[ ");
+    for (int j = 0; j < M; j++) {
+        mtmp = A[i + j * LDA];
+        mpfr_printf("%5.2Re", mpfr_ptr(mtmp));
+        if (j < M - 1)
+        printf(", ");
+    }
+    if (i < N - 1)
+        printf("]; ");
+    else
+        printf("] ");
+    }
+    printf("]");
+}
+
+
 //double  NewLRedMarginLogLike(int &ndim, double *Cube, int &npars, double *DerivedParams, void *context){
 double  NewLRedMarginLogLike(double Cube[], int ndim, double phi[], int nDerived, void *context) {
 
@@ -1711,6 +1732,10 @@ double  NewLRedMarginLogLike(double Cube[], int ndim, double phi[], int nDerived
 /////////////////////////Get Time domain likelihood//////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////  
 
+	//static unsigned int oldcw;
+        //if(((MNStruct *)globalcontext)->useNbitsAlgebra > 0)
+	//	fpu_fix_start(&oldcw);
+
 	double tdet=0;
 	double timelike=0;
 
@@ -1720,6 +1745,15 @@ double  NewLRedMarginLogLike(double Cube[], int ndim, double phi[], int nDerived
 		tdet -= log(Noise[o]);
 	}
 
+	mpreal qdtimelike = 0;
+	if(((MNStruct *)globalcontext)->useNbitsAlgebra > 0) {
+		for(int o=0; o<((MNStruct *)globalcontext)->pulse->nobs; o++){
+			mpreal res = (mpreal)Resvec[o];
+			mpreal Nval = (mpreal)Noise[o];
+			mpreal chicomp = res * res * Nval;
+			qdtimelike += chicomp;
+		}
+	}
 //////////////////////////////////////////////////////////////////////////////////////////  
 ///////////////////////Form Total Matrices////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1736,6 +1770,52 @@ double  NewLRedMarginLogLike(double Cube[], int ndim, double phi[], int nDerived
 //////////////////////////////////////////////////////////////////////////////////////////
 	logtchk("Starting algebra");
 	int savememory = 0;
+        
+        /*
+        mplapackint n = 3;
+        //initialization of MPFR
+        int default_prec = 256;
+        mpfr_set_default_prec(default_prec);
+
+        mpreal *A = new mpreal[n * n];
+        mpreal *B = new mpreal[n * n];
+        mpreal *C = new mpreal[n * n];
+        mpreal alpha, beta;
+
+        //setting A matrix
+        A[0 + 0 * n] = 1;    A[0 + 1 * n] = 8;    A[0 + 2 * n] = 3;
+        A[1 + 0 * n] = 0;    A[1 + 1 * n] = 10;   A[1 + 2 * n] = 8;
+        A[2 + 0 * n] = 9;    A[2 + 1 * n] = -5;   A[2 + 2 * n] = -1;
+
+        B[0 + 0 * n] = 9;    B[0 + 1 * n] = 8;    B[0 + 2 * n] = 3;
+        B[1 + 0 * n] = 3;    B[1 + 1 * n] = -11;  B[1 + 2 * n] = 0;
+        B[2 + 0 * n] = -8;   B[2 + 1 * n] = 6;    B[2 + 2 * n] = 1;
+
+        C[0 + 0 * n] = 3;    C[0 + 1 * n] = 3;    C[0 + 2 * n] = 0;
+        C[1 + 0 * n] = 8;    C[1 + 1 * n] = 4;    C[1 + 2 * n] = 8;
+        C[2 + 0 * n] = 6;    C[2 + 1 * n] = 1;    C[2 + 2 * n] = -2;
+
+        printf("# Rgemm demo...\n");
+
+        printf("A ="); printmat(n, n, A, n); printf("\n");
+        printf("B ="); printmat(n, n, B, n); printf("\n");
+        printf("C ="); printmat(n, n, C, n); printf("\n");
+        alpha = 3.0;
+        beta = -2.0;
+        Rgemm("n", "n", n, n, n, alpha, A, n, B, n, beta, C, n);
+
+        mpfr_printf("alpha = %5.3Re\n", mpfr_ptr(alpha));
+        mpfr_printf("beta  = %5.3Re\n", mpfr_ptr(beta));
+        printf("ans ="); printmat(n, n, C, n); printf("\n");
+        printf("#please check by Matlab or Octave following and ans above\n");
+        printf("alpha * A * B + beta * C \n");
+        delete[]C;
+        delete[]B;
+        delete[]A;
+        */
+
+
+
 	
 	double *NTd = new double[totalsize];
 	double *TNT=new double[totalsize*totalsize];
@@ -1775,6 +1855,97 @@ double  NewLRedMarginLogLike(double Cube[], int ndim, double phi[], int nDerived
 		vector_dgemv(TotalMatrix,Resvec,NTd,((MNStruct *)globalcontext)->pulse->nobs,totalsize,'T');
 
 	}
+
+#ifdef HAVE_MLAPACK
+
+	mpreal qdfreqlikeChol = 0.0;
+	mpreal qdsigmadetChol = 0.0;
+	int qdinfo = 0;
+
+	if(((MNStruct *)globalcontext)->useNbitsAlgebra > 0) {
+
+		mplapackint n = totalsize;
+		mplapackint m = ((MNStruct *)globalcontext)->pulse->nobs;
+
+		mpreal *TotalMatrix_mp = new mpreal[m * n];
+		mpreal *NT_mp = new mpreal[m * n];
+		mpreal *TNT_mp = new mpreal[n * n];
+		mpreal *Chol_TNT_mp = new mpreal[n * n];
+		mpreal *Resvec_mp = new mpreal[m];
+		mpreal *NTd_mp = new mpreal[n];
+		mpreal *NTd_mp_copy = new mpreal[n];
+		mpreal *inv_powercoeff_mp = new mpreal[totCoeff];
+		mpreal alpha, beta;
+		
+		// copy matrices
+		for (int i = 0; i < m; i++) 
+			for (int j = 0; j < n; j++) 
+				TotalMatrix_mp[i + j*m] = (mpreal) TotalMatrix[i+j*m];
+
+		for (int i = 0; i < m; i++) 
+			for (int j = 0; j<n; j++) 
+				NT_mp[i + j*m] = (mpreal) NT[i + j*m];
+
+		for (int i =0; i < m; i++) 
+			Resvec_mp[i] = (mpreal) Resvec[i];
+		for (int i =0; i < totCoeff; i++) 
+			inv_powercoeff_mp[i] = (mpreal) (1.0/powercoeff[i]);
+
+		alpha = 1.0;
+		beta =  0.0;
+		Rgemv("t", m, n, alpha, NT_mp, m, Resvec_mp, 1, beta, NTd_mp, 1);
+
+		// make a copy of NTd for later as the linear algebra change it in place
+		for(int i =0; i < n; i++) 
+			NTd_mp_copy[i] = NTd_mp[i];
+
+		Rgemm("t", "n", n, n, m, alpha, TotalMatrix_mp, m, NT_mp, m, beta, TNT_mp, n);
+
+		for(int j = 0; j < totCoeff; j++) {
+			int l = TimetoMargin + j;
+			TNT_mp[l + l*n] += inv_powercoeff_mp[j];
+		}
+
+		for(int j = 0; j < totalredshapecoeff; j++) {
+			int l = TimetoMargin + totCoeff + j;
+			mpreal detfac = (mpreal)pow(10.0, -12);
+			TNT_mp[l + l*n] += detfac * TNT_mp[l + l*n];
+		    
+		}
+
+		for(int i =0; i < n*n; i++)
+			Chol_TNT_mp[i] = TNT_mp[i];
+
+		mplapackint Cholinfo;
+
+		// calculate the cholesky decomposition
+		Rpotrf("u", n, Chol_TNT_mp, n, Cholinfo);
+		if(Cholinfo != 0)
+			qdinfo = (int)Cholinfo;
+
+		// get the determinant from the decomposition
+		for(int i =0; i < n; i++) 
+			qdsigmadetChol += log(abs(Chol_TNT_mp[i + i*n]));
+
+		// perform the cholesky solve
+		Rpotrs("u", n, 1, Chol_TNT_mp, n,  NTd_mp_copy, n, Cholinfo);
+
+		if(Cholinfo != 0)
+			qdinfo = (int)Cholinfo;
+
+		// calculate the prior bit of the likelihhood
+		for(int i =0; i < totalsize; i++)
+			qdfreqlikeChol += NTd_mp[i] * NTd_mp_copy[i];
+
+		delete[] NTd_mp_copy;
+		delete[] NTd_mp;
+		delete[] TotalMatrix_mp;
+		delete[] Resvec_mp;
+		delete[] Chol_TNT_mp;
+		delete[] TNT_mp;
+		delete[] inv_powercoeff_mp;
+	}
+#endif
 	logtchk("Fnishing main algebra");
 
 	if(savememory == 0){
@@ -1827,6 +1998,22 @@ double  NewLRedMarginLogLike(double Cube[], int ndim, double phi[], int nDerived
 		globalinfo = 1;
 	//	lnew=-pow(10.0,20);
 	}
+
+
+#ifdef HAVE_MLAPACK
+    
+        if(((MNStruct *)globalcontext)->useNbitsAlgebra > 0) {
+
+		mpreal qdAllLikeChol = -0.5 * (tdet + 2*qdsigmadetChol + freqdet + qdtimelike - qdfreqlikeChol) + uniformpriorterm;
+		double qdlikeChol = cast2double(qdAllLikeChol);
+		printf("compare likes %f %f\n", lnew, qdlikeChol);
+
+               // fpu_fix_end(&oldcw);
+        }
+#endif
+
+
+
 	if(isnan(lnew) || isinf(lnew) || globalinfo != 0){
 		globalinfo = 1;
 		lnew=-pow(10.0,20);
@@ -1881,10 +2068,9 @@ double  NewLRedMarginLogLike(double Cube[], int ndim, double phi[], int nDerived
 
 	return lnew;
 
-	
-
-
 }
+
+
 
 void TemplateProfLikeMNWrap(double *Cube, int &ndim, int &npars, double &lnew, void *context){
 
